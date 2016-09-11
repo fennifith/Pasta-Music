@@ -28,9 +28,9 @@ Pasta Music is a material design music player for android that attempts to creat
 
 ### Screenshots
 
-Splash Screen | Home Screen | Now Playing
-------------- | ----------- | -----------
-![](http://theandroidmaster.github.io/images/screenshots/Screenshot_2016-04-17-15-33-39.png) | ![](http://theandroidmaster.github.io/images/screenshots/image4155.png) | ![](http://theandroidmaster.github.io/images/screenshots/image4646.png)
+Home Screen | Now Playing
+----------- | -----------
+![](http://theandroidmaster.github.io/images/screenshots/image4155.png) | ![](http://theandroidmaster.github.io/images/screenshots/image4646.png)
 
 ## Links
 
