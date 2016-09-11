@@ -1,5 +1,5 @@
 # Pasta-Music
-A [material design](https://material.google.com/) music player for Android, based off [Pasta for Spotify](https://github.com/TheAndroidMaster/Pasta-for-Spotify)
+A [material design](https://material.google.com/) music player for Android using google's [ExoPlayer](https://github.com/google/ExoPlayer) library, based off [Pasta for Spotify](https://github.com/TheAndroidMaster/Pasta-for-Spotify).
 
 ## About
 
