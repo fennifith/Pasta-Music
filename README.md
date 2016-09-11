@@ -3,7 +3,7 @@ A [material design](https://material.google.com/) music player for Android, base
 
 ## About
 
-Pasta Music is a material design music player for android that attempts to create a better user experience than the standard music players which can have too many features or be generally confusing to users. It was created to show an improvement in design over the official Spotify app, and to allow for older and slower devices to have quicker access to Spotify's services without losing (much) functionality. Some examples of this are as follows:
+Pasta Music is a material design music player for android that attempts to create a better user experience than the standard music players which can have too many features or be generally confusing to users. It was created to show an improvement in design and to allow older and slower devices to have quicker access to local music files. Some examples of this are as follows:
 #### Design:
 - Touch areas are increased for small devices to be able to open things like menus and playlists more easily than the layout in the official app
 - A lot of access relies on swipe navigation within the app to speed up general user experience
