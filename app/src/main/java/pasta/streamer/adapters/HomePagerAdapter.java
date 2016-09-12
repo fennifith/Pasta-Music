@@ -10,18 +10,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.afollestad.async.Action;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import kaaes.spotify.webapi.android.models.AlbumSimple;
-import kaaes.spotify.webapi.android.models.FeaturedPlaylists;
-import kaaes.spotify.webapi.android.models.NewReleases;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import pasta.streamer.Pasta;
 import pasta.streamer.data.AlbumListData;
 import pasta.streamer.data.PlaylistListData;
 import pasta.streamer.fragments.OmniFragment;
-import pasta.streamer.utils.PreferenceUtils;
-import pasta.streamer.utils.StaticUtils;
 
 public class HomePagerAdapter extends FragmentStatePagerAdapter {
 
@@ -39,7 +33,7 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
         albumFragment = new OmniFragment();
         playlistFragment = new OmniFragment();
 
-        new Action<ArrayList<String>>() {
+        new Action<List<AlbumListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -48,58 +42,22 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
 
             @Nullable
             @Override
-            protected ArrayList<String> run() throws InterruptedException {
-                ArrayList<String> albums = new ArrayList<>();
-                NewReleases releases = null;
-                for (int i = 0; releases == null && i < PreferenceUtils.getRetryCount(activity); i++) {
-                    try {
-                        releases = pasta.spotifyService.getNewReleases();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (releases == null) return null;
-
-                for (AlbumSimple album : releases.albums.items) {
-                    albums.add(album.id);
-                }
-                return albums;
+            protected List<AlbumListData> run() throws InterruptedException {
+                return pasta.getNewAlbums();
             }
 
             @Override
-            protected void done(@Nullable ArrayList<String> result) {
+            protected void done(@Nullable List<AlbumListData> result) {
                 if (result == null) {
                     pasta.onCriticalError(activity, "new releases action");
                     return;
                 }
 
-                for (final String id : result) {
-                    new Action<AlbumListData>() {
-                        @NonNull
-                        @Override
-                        public String id() {
-                            return "getAlbum";
-                        }
-
-                        @Nullable
-                        @Override
-                        protected AlbumListData run() throws InterruptedException {
-                            return pasta.getAlbum(id);
-                        }
-
-                        @Override
-                        protected void done(@Nullable AlbumListData result) {
-                            if (result == null) return;
-                            albumFragment.addData(result);
-                        }
-                    }.execute();
-                }
+                albumFragment.addData(result);
             }
         }.execute();
 
-        new Action<ArrayList<PlaylistListData>>() {
+        new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -108,28 +66,12 @@ public class HomePagerAdapter extends FragmentStatePagerAdapter {
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                FeaturedPlaylists featured = null;
-                for (int i = 0; featured == null && i < PreferenceUtils.getRetryCount(activity); i++) {
-                    try {
-                        featured = pasta.spotifyService.getFeaturedPlaylists();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (featured == null) return null;
-
-                ArrayList<PlaylistListData> playlists = new ArrayList<>();
-                for (PlaylistSimple playlist : featured.playlists.items) {
-                    playlists.add(new PlaylistListData(playlist, pasta.me));
-                }
-                return playlists;
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.getFeaturedPlaylists();
             }
 
             @Override
-            protected void done(@Nullable ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable List<PlaylistListData> result) {
                 if (result == null) {
                     pasta.onCriticalError(activity, "featured playlists action");
                     return;

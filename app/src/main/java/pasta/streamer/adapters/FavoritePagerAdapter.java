@@ -11,18 +11,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.afollestad.async.Action;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsCursorPager;
-import kaaes.spotify.webapi.android.models.Pager;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import pasta.streamer.Pasta;
+import pasta.streamer.data.AlbumListData;
 import pasta.streamer.data.ArtistListData;
 import pasta.streamer.data.PlaylistListData;
+import pasta.streamer.data.TrackListData;
 import pasta.streamer.fragments.OmniFragment;
-import pasta.streamer.utils.PreferenceUtils;
-import pasta.streamer.utils.StaticUtils;
 
 public class FavoritePagerAdapter extends FragmentStatePagerAdapter {
 
@@ -63,7 +59,7 @@ public class FavoritePagerAdapter extends FragmentStatePagerAdapter {
         trackFragment.clear();
         artistFragment.clear();
 
-        new Action<ArrayList<PlaylistListData>>() {
+        new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -72,20 +68,12 @@ public class FavoritePagerAdapter extends FragmentStatePagerAdapter {
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                ArrayList<PlaylistListData> playlists = new ArrayList<>();
-                Pager<PlaylistSimple> my = pasta.getMyPlaylists();
-                if (my == null) return null;
-
-                for (PlaylistSimple playlist : my.items) {
-                    playlists.add(new PlaylistListData(playlist, pasta.me));
-                }
-
-                return playlists;
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.getFavoritePlaylists();
             }
 
             @Override
-            protected void done(@Nullable ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable List<PlaylistListData> result) {
                 if (result == null) {
                     pasta.onError(activity, "favorite playlist action");
                     return;
@@ -94,10 +82,53 @@ public class FavoritePagerAdapter extends FragmentStatePagerAdapter {
             }
         }.execute();
 
-        albumFragment.swapData(pasta.getFavoriteAlbums()) ;
-        trackFragment.swapData(pasta.getFavoriteTracks());
+        new Action<List<AlbumListData>>() {
+            @NonNull
+            @Override
+            public String id() {
+                return "getFavAlbums";
+            }
 
-        new Action<ArrayList<ArtistListData>>() {
+            @Nullable
+            @Override
+            protected List<AlbumListData> run() throws InterruptedException {
+                return pasta.getFavoriteAlbums();
+            }
+
+            @Override
+            protected void done(@Nullable List<AlbumListData> result) {
+                if (result == null) {
+                    pasta.onError(activity, "favorite album action");
+                    return;
+                }
+                albumFragment.swapData(result);
+            }
+        }.execute();
+
+        new Action<List<TrackListData>>() {
+            @NonNull
+            @Override
+            public String id() {
+                return "getFavTracks";
+            }
+
+            @Nullable
+            @Override
+            protected List<TrackListData> run() throws InterruptedException {
+                return pasta.getFavoriteTracks();
+            }
+
+            @Override
+            protected void done(@Nullable List<TrackListData> result) {
+                if (result == null) {
+                    pasta.onError(activity, "favorite track action");
+                    return;
+                }
+                trackFragment.swapData(result);
+            }
+        }.execute();
+
+        new Action<List<ArtistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -106,29 +137,12 @@ public class FavoritePagerAdapter extends FragmentStatePagerAdapter {
 
             @Nullable
             @Override
-            protected ArrayList<ArtistListData> run() throws InterruptedException {
-                ArtistsCursorPager followed = null;
-                for (int i = 0; followed == null && i < PreferenceUtils.getRetryCount(activity); i++) {
-                    try {
-                        followed = pasta.spotifyService.getFollowedArtists();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (followed == null) return null;
-
-                ArrayList<ArtistListData> artists = new ArrayList<>();
-                for (Artist artist : followed.artists.items) {
-                    artists.add(new ArtistListData(artist));
-                }
-
-                return artists;
+            protected List<ArtistListData> run() throws InterruptedException {
+                return pasta.getFavoriteArtists();
             }
 
             @Override
-            protected void done(@Nullable ArrayList<ArtistListData> result) {
+            protected void done(@Nullable List<ArtistListData> result) {
                 if (result == null) {
                     pasta.onError(activity, "favorite artist action");
                     return;

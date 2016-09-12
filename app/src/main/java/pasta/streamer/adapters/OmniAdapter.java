@@ -31,6 +31,7 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
@@ -51,14 +52,14 @@ import pasta.streamer.views.CustomImageView;
 
 public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
 
-    private ArrayList original;
-    private ArrayList list;
+    private List original;
+    private List list;
     private AppCompatActivity activity;
     private Pasta pasta;
     private boolean thumbnails, cards, trackList, palette, dark;
     private boolean isFavoriteBehavior;
 
-    public OmniAdapter(AppCompatActivity activity, ArrayList list, boolean isFavoriteBehavior) {
+    public OmniAdapter(AppCompatActivity activity, List list, boolean isFavoriteBehavior) {
         original = list;
         if (list != null) {
             this.list = new ArrayList();
@@ -88,7 +89,14 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
         notifyItemInserted(pos);
     }
 
-    public void swapData(ArrayList list) {
+    public void addData(List data) {
+        if (data == null) return;
+        original.addAll(data);
+        list.addAll(data);
+        notifyDataSetChanged();
+    }
+
+    public void swapData(List list) {
         original = list;
         this.list = new ArrayList();
         this.list.addAll(list);
@@ -306,7 +314,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
                     @Override
                     public void onClick(View view) {
                         int position = 0;
-                        ArrayList<TrackListData> trackList = new ArrayList<TrackListData>();
+                        List<TrackListData> trackList = new ArrayList<>();
                         for (int i = 0; i < list.size(); i++) {
                             if (list.get(i) instanceof TrackListData) {
                                 if (i == holder.getAdapterPosition()) position = trackList.size();

@@ -11,65 +11,22 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.ExceptionReporter;
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.List;
 
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.Pager;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
-import kaaes.spotify.webapi.android.models.PlaylistTrack;
-import kaaes.spotify.webapi.android.models.PlaylistsPager;
-import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.TrackSimple;
-import kaaes.spotify.webapi.android.models.Tracks;
-import kaaes.spotify.webapi.android.models.UserPrivate;
 import pasta.streamer.data.AlbumListData;
 import pasta.streamer.data.ArtistListData;
 import pasta.streamer.data.PlaylistListData;
 import pasta.streamer.data.TrackListData;
 import pasta.streamer.dialogs.ErrorDialog;
 import pasta.streamer.utils.PreferenceUtils;
-import pasta.streamer.utils.StaticUtils;
 
 public class Pasta extends Application {
-    //below is where the client id is stored, which has been removed from the public repo for security reasons
-    //instructions to obtain a client id are here: https://developer.spotify.com/web-api/tutorial/
-    public final String CLIENT_ID = "INSERT_CLIENT_ID_HERE";
-    public String token;
-    public SpotifyApi spotifyApi;
-    public SpotifyService spotifyService;
-    public UserPrivate me;
-    private Tracker tracker;
 
     private ErrorDialog errorDialog;
 
-    synchronized public Tracker getDefaultTracker() {
-        if (tracker == null) {
-            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            tracker = analytics.newTracker(R.xml.global_tracker);
-        }
-        return tracker;
-    }
-
     public void setScreen(Context context) {
-        Tracker tracker = getDefaultTracker();
-
-        tracker.setScreenName(context.getClass().getName());
-        tracker.send(new HitBuilders.ScreenViewBuilder()
-                .setNewSession()
-                .build());
-
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionReporter(tracker, Thread.getDefaultUncaughtExceptionHandler(), context));
+        //TODO: weird analytics things
     }
 
     public void onCriticalError(final Context context, String message) {
@@ -81,9 +38,6 @@ public class Pasta extends Application {
             errorDialog = new ErrorDialog(context).setMessage(errorMessage);
             errorDialog.show();
         }
-
-        getDefaultTracker().send(new HitBuilders.EventBuilder(context.getClass().getName(), message).build());
-        GoogleAnalytics.getInstance(context).dispatchLocalHits();
     }
 
     public void onError(Context context, String message) {
@@ -92,9 +46,6 @@ public class Pasta extends Application {
             toastMessage += "\n\nError: " + message + "\nLocation: " + context.getClass().getName();
 
         showToast(toastMessage);
-
-        getDefaultTracker().send(new HitBuilders.EventBuilder(context.getClass().getName(), message).build());
-        GoogleAnalytics.getInstance(context).dispatchLocalHits();
     }
 
     public void showToast(String message) {
@@ -111,31 +62,30 @@ public class Pasta extends Application {
         toast.show();
     }
 
-    public ArrayList<AlbumListData> albums;
-    public ArrayList<TrackListData> tracks;
-
-    public ArrayList<AlbumListData> getFavoriteAlbums() {
-        if (albums == null) {
-            onCriticalError(this, "null favorite albums");
-            return null;
-        }
-        return (ArrayList<AlbumListData>) albums.clone();
+    public List<AlbumListData> getFavoriteAlbums() {
+        return new ArrayList<>();
     }
 
-    public ArrayList<TrackListData> getFavoriteTracks() {
-        if (tracks == null) {
-            onCriticalError(this, "null favorite tracks");
-            return null;
-        }
-        return (ArrayList<TrackListData>) tracks.clone();
+    @Nullable
+    public List<PlaylistListData> getFavoritePlaylists() throws InterruptedException {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<ArtistListData> getFavoriteArtists() throws InterruptedException {
+        return new ArrayList<>();
+    }
+
+    public List<TrackListData> getFavoriteTracks() {
+        return new ArrayList<>();
     }
 
     public boolean toggleFavorite(PlaylistListData data) {
         try {
             if (isFavorite(data)) {
-                spotifyService.unfollowPlaylist(data.playlistOwnerId, data.playlistId);
+                //TODO: remove playlist from favorites
             } else {
-                spotifyService.followPlaylist(data.playlistOwnerId, data.playlistId);
+                //TODO: add playlist to favorites
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,13 +97,9 @@ public class Pasta extends Application {
     public boolean toggleFavorite(AlbumListData data) {
         try {
             if (isFavorite(data)) {
-                spotifyService.removeFromMySavedAlbums(data.albumId);
-                for (int i = 0; i < albums.size(); i++) {
-                    if (albums.get(i).albumId.matches(data.albumId)) albums.remove(i);
-                }
+                //TODO: remove album from favorites
             } else {
-                spotifyService.addToMySavedAlbums(data.albumId);
-                albums.add(data);
+                //TODO: add album to favorites
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,13 +111,9 @@ public class Pasta extends Application {
     public boolean toggleFavorite(TrackListData data) {
         try {
             if (isFavorite(data)) {
-                spotifyService.removeFromMySavedTracks(data.trackId);
-                for (int i = 0; i < tracks.size(); i++) {
-                    if (tracks.get(i).trackId.matches(data.trackId)) tracks.remove(i);
-                }
+                //TODO: remove track from favorites
             } else {
-                spotifyService.addToMySavedTracks(data.trackId);
-                tracks.add(data);
+                //TODO: add track to favorites
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,9 +125,9 @@ public class Pasta extends Application {
     public boolean toggleFavorite(ArtistListData data) {
         try {
             if (isFavorite(data)) {
-                spotifyService.unfollowArtists(data.artistId);
+                //TODO: remove artist from favorites
             } else {
-                spotifyService.followArtists(data.artistId);
+                //TODO: add artist to favorites
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -196,186 +138,76 @@ public class Pasta extends Application {
 
     @Nullable
     public Boolean isFavorite(PlaylistListData data) throws InterruptedException {
-        Boolean favorite = null;
-        for (int i = 0; favorite == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                favorite = spotifyService.areFollowingPlaylist(data.playlistOwnerId, data.playlistId, me.id)[0];
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        return favorite;
+        return false;
     }
 
     @Nullable
     public Boolean isFavorite(AlbumListData data) {
-        if (albums == null) return null;
-        for (AlbumListData album : albums) {
-            if (album.albumId.matches(data.albumId)) return true;
-        }
         return false;
     }
 
     @Nullable
     public Boolean isFavorite(TrackListData data) {
-        if (tracks == null) return null;
-        for (TrackListData track : tracks) {
-            if (track.trackId.matches(data.trackId)) return true;
-        }
         return false;
     }
 
     @Nullable
     public Boolean isFavorite(ArtistListData data) throws InterruptedException {
-        Boolean favorite = null;
-        for (int i = 0; favorite == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                favorite = spotifyService.isFollowingArtists(data.artistId)[0];
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        return favorite;
+        return false;
     }
 
     @Nullable
     public ArtistListData getArtist(String id) throws InterruptedException {
-        Artist a = null;
-        for (int i = 0; a == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                a = spotifyService.getArtist(id);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        if (a == null) return null;
-        return new ArtistListData(a);
+        return null;
     }
 
     @Nullable
     public AlbumListData getAlbum(String id) throws InterruptedException {
-        Album album = null;
-        for (int i = 0; album == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                album = spotifyService.getAlbum(id);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        if (album == null) return null;
-        else return new AlbumListData(album);
+        return null;
     }
 
     @Nullable
-    public ArrayList<TrackListData> getTracks(PlaylistListData data) throws InterruptedException {
-        ArrayList<TrackListData> trackList = new ArrayList<>();
-        Map<String, Object> options = new HashMap<>();
-
-        for (int i = 0; i < data.tracks; i += 100) {
-            Pager<PlaylistTrack> tracks = null;
-            options.put(SpotifyService.OFFSET, i);
-            for (int l = 0; tracks == null && l < PreferenceUtils.getRetryCount(this); l++) {
-                try {
-                    tracks = spotifyService.getPlaylistTracks(data.playlistOwnerId, data.playlistId, options);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                    else break;
-                }
-            }
-            if (tracks == null) return null;
-
-            for (PlaylistTrack track : tracks.items) {
-                trackList.add(new TrackListData(track.track));
-            }
-        }
-
-        return trackList;
+    public List<TrackListData> getTracks(PlaylistListData data) throws InterruptedException {
+        return new ArrayList<>();
     }
 
     @Nullable
-    public ArrayList<TrackListData> getTracks(ArtistListData data) throws InterruptedException {
-        Tracks tracks = null;
-        for (int i = 0; tracks == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                tracks = spotifyService.getArtistTopTrack(data.artistId, Locale.getDefault().getCountry());
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        if (tracks == null) return null;
-
-        ArrayList<TrackListData> trackList = new ArrayList<>();
-        for (Track track : tracks.tracks) {
-            trackList.add(new TrackListData(track));
-        }
-        return trackList;
+    public List<TrackListData> getTracks(ArtistListData data) throws InterruptedException {
+        return new ArrayList<>();
     }
 
     @Nullable
-    public ArrayList<TrackListData> getTracks(AlbumListData data) throws InterruptedException {
-        Pager<TrackSimple> tracks = null;
-        for (int i = 0; tracks == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                tracks = spotifyService.getAlbum(data.albumId).tracks;
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        if (tracks == null) return null;
-
-        ArrayList<TrackListData> trackList = new ArrayList<>();
-        for (TrackSimple track : tracks.items) {
-            trackList.add(new TrackListData(track, data.albumName, data.albumId, data.albumImage, data.albumImageLarge));
-        }
-        return trackList;
+    public List<TrackListData> getTracks(AlbumListData data) throws InterruptedException {
+        return new ArrayList<>();
     }
 
     @Nullable
-    public Pager<PlaylistSimple> getMyPlaylists() throws InterruptedException {
-        Pager<PlaylistSimple> playlists = null;
-        for (int i = 0; playlists == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                playlists = spotifyService.getMyPlaylists();
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        return playlists;
+    public List<PlaylistListData> searchPlaylists(String query, int limit) throws InterruptedException {
+        return new ArrayList<>();
     }
 
     @Nullable
-    public ArrayList<PlaylistListData> searchPlaylists(String query, Map<String, Object> limitMap) throws InterruptedException {
-        PlaylistsPager playlists = null;
-        for (int i = 0; playlists == null && i < PreferenceUtils.getRetryCount(this); i++) {
-            try {
-                playlists = spotifyService.searchPlaylists(query, limitMap);
-            } catch (Exception e) {
-                e.printStackTrace();
-                if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                else break;
-            }
-        }
-        if (playlists == null) return null;
+    public List<ArtistListData> searchArtists(String query, int limit) throws InterruptedException {
+        return new ArrayList<>();
+    }
 
-        ArrayList<PlaylistListData> playlistList = new ArrayList<>();
-        for (PlaylistSimple playlist : playlists.playlists.items) {
-            playlistList.add(new PlaylistListData(playlist, me));
-        }
-        return playlistList;
+    @Nullable
+    public List<TrackListData> searchTracks(String query, int limit) throws InterruptedException {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<AlbumListData> searchAlbums(String query, int limit) throws InterruptedException {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<AlbumListData> getNewAlbums() {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<PlaylistListData> getFeaturedPlaylists() {
+        return new ArrayList<>();
     }
 }

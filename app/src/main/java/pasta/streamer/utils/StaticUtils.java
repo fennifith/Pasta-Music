@@ -6,24 +6,20 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import pasta.streamer.PlayerService;
 import pasta.streamer.data.TrackListData;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class StaticUtils {
 
     public static boolean shouldResendRequest(Exception e) {
-        if (e != null && e instanceof RetrofitError) {
-            Response response = ((RetrofitError) e).getResponse();
-            int status = -1;
-            if (response != null) status = response.getStatus();
-            return status == 429 || status == 502 || status == 520;
-        } else return false;
+        //TODO: idk what to do here
+        return false;
     }
 
     public static void restart(Context context) {
@@ -68,11 +64,12 @@ public class StaticUtils {
         return height;
     }
 
-    public static void play(int startPos, ArrayList<TrackListData> trackList, Context context) {
+    public static void play(int startPos, List<TrackListData> trackList, Context context) {
         Intent intent = new Intent(PlayerService.ACTION_PLAY);
         intent.setClass(context, PlayerService.class);
         intent.putExtra(PlayerService.ACTION_PLAY_EXTRA_START_POS, startPos);
-        intent.putParcelableArrayListExtra(PlayerService.ACTION_PLAY_EXTRA_TRACKS, trackList);
+        if (trackList instanceof ArrayList)
+            intent.putParcelableArrayListExtra(PlayerService.ACTION_PLAY_EXTRA_TRACKS, (ArrayList<? extends Parcelable>) trackList);
         context.startService(intent);
     }
 

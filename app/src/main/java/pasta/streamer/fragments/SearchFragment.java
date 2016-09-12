@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -67,7 +68,7 @@ public class SearchFragment extends Fragment {
         if (spinner != null) spinner.setVisibility(View.GONE);
     }
 
-    public void addData(ArrayList data) {
+    public void addData(List data) {
         if (adapter != null) adapter.addData(data);
         if (spinner != null) spinner.setVisibility(View.GONE);
     }

@@ -34,6 +34,7 @@ import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
@@ -52,12 +53,12 @@ import pasta.streamer.views.CustomImageView;
 
 public class SectionedOmniAdapter extends RecyclerView.Adapter<SectionedOmniAdapter.ViewHolder> {
 
-    private ArrayList<TrackListData> tracks;
-    private ArrayList<AlbumListData> albums;
-    private ArrayList<PlaylistListData> playlists;
-    private ArrayList<ArtistListData> artists;
+    private List<TrackListData> tracks;
+    private List<AlbumListData> albums;
+    private List<PlaylistListData> playlists;
+    private List<ArtistListData> artists;
     private AppCompatActivity activity;
-    private ArrayList list;
+    private List list;
     private boolean thumbnails, cards, palette, dark;
     private Pasta pasta;
 
@@ -113,12 +114,12 @@ public class SectionedOmniAdapter extends RecyclerView.Adapter<SectionedOmniAdap
         notifyItemInserted(pos + offset);
     }
 
-    public void addData(ArrayList datas) {
+    public void addData(List datas) {
         datas.addAll(list);
         swapData(datas);
     }
 
-    public void swapData(ArrayList list) {
+    public void swapData(List list) {
         this.list = list;
 
         tracks.clear();

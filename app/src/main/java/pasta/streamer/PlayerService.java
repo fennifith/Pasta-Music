@@ -6,31 +6,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.spotify.sdk.android.player.Config;
-import com.spotify.sdk.android.player.ConnectionStateCallback;
-import com.spotify.sdk.android.player.PlayConfig;
-import com.spotify.sdk.android.player.Player;
-import com.spotify.sdk.android.player.PlayerNotificationCallback;
-import com.spotify.sdk.android.player.PlayerState;
-import com.spotify.sdk.android.player.PlayerStateCallback;
-import com.spotify.sdk.android.player.Spotify;
+import com.google.android.exoplayer.ExoPlayer;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import pasta.streamer.activities.PlayerActivity;
 import pasta.streamer.data.TrackListData;
-import pasta.streamer.utils.PreferenceUtils;
 
 public class PlayerService extends Service {
 
@@ -47,8 +36,6 @@ public class PlayerService extends Service {
             ACTION_MOVE_POS = "pasta.ACTION_MOVE_POS",
             ACTION_MOVE_POS_EXTRA_POS = "pasta.ACTION_MOVE_POS_EXTRA_POS",
             STATE_UPDATE = "pasta.STATE_UPDATE",
-            EXTRA_TOKEN = "pasta.EXTRA_TOKEN",
-            EXTRA_CLIENT_ID = "pasta.EXTRA_CLIENT_ID",
             EXTRA_PLAYING = "pasta.EXTRA_PLAYING",
             EXTRA_CUR_POSITION = "pasta.EXTRA_CUR_POSITION",
             EXTRA_CUR_TIME = "pasta.EXTRA_CUR_TIME",
@@ -60,14 +47,10 @@ public class PlayerService extends Service {
 
     private static final int NOTIFICATION_ID = 12345;
 
-    private Player spotifyPlayer;
-    private Config playerConfig;
-    private PlayConfig spotifyPlayConfig;
-    private PlayerState spotifyPlayerState;
     private ArrayList<TrackListData> trackList;
-    private int curPos, errorCount;
-    private boolean debugPlaying;
+    private int curPos;
 
+    private ExoPlayer player;
     private Pasta pasta;
 
     @Override
@@ -76,106 +59,19 @@ public class PlayerService extends Service {
         pasta = (Pasta) getApplicationContext();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (spotifyPlayer != null) spotifyPlayer.shutdownNow();
+    private void initPlayer() {
+
     }
 
-    private void initPlayer(String token, String clientId) {
-        debugPlaying = false;
-
-        if (playerConfig == null) {
-            playerConfig = new Config(this, token, clientId);
-            playerConfig.useCache(false);
-        }
-
-        spotifyPlayer = Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
-            @Override
-            public void onInitialized(Player player) {
-                spotifyPlayer.setPlaybackBitrate(PreferenceUtils.getQuality(getApplicationContext()));
-                spotifyPlayer.setRepeat(true);
-
-                checkForState();
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                throwable.printStackTrace();
-                PlayerService.this.onError(throwable.getMessage());
-            }
-        });
-
-        spotifyPlayer.addPlayerNotificationCallback(new PlayerNotificationCallback() {
-            @Override
-            public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
-                spotifyPlayerState = playerState;
-                if (trackList != null) {
-                    if (!trackList.get(curPos).trackUri.matches(playerState.trackUri)) {
-                        if (trackList.get(getInfinitePos(curPos + 1)).trackUri.matches(playerState.trackUri)) curPos = getInfinitePos(curPos + 1);
-                        else {
-                            for (int i = 0; i < trackList.size(); i++) {
-                                if (trackList.get(i).trackUri.matches(playerState.trackUri)) {
-                                    curPos = i;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    showNotification();
-                }
-            }
-
-            @Override
-            public void onPlaybackError(ErrorType errorType, String s) {
-                Log.e("PlayerService", errorType.name() + " " + s);
-                onError(errorType.name() + " " + s);
-            }
-        });
-
-        spotifyPlayer.addConnectionStateCallback(new ConnectionStateCallback() {
-            @Override
-            public void onLoggedIn() {
-            }
-
-            @Override
-            public void onLoggedOut() {
-            }
-
-            @Override
-            public void onLoginFailed(Throwable throwable) {
-                onError("Login Failed: " + throwable.getMessage());
-            }
-
-            @Override
-            public void onTemporaryError() {
-                onError("Random error");
-            }
-
-            @Override
-            public void onConnectionMessage(String s) {
-            }
-        });
+    @Override
+    public void onDestroy() {
+        player.release();
+        super.onDestroy();
     }
 
     private void onError(String message) {
-        if (spotifyPlayer != null) {
-            errorCount++;
-            if (errorCount > 5 && errorCount < 20) {
-                if (PreferenceUtils.isDebug(this))
-                    pasta.showToast(message + ", attempting to restart...");
-
-                stopService(new Intent(this, PlayerService.class));
-
-                Intent intent = new Intent(PlayerService.ACTION_INIT);
-                intent.setClass(this, PlayerService.class);
-                intent.putExtra(PlayerService.EXTRA_TOKEN, playerConfig.oauthToken);
-                intent.putExtra(PlayerService.EXTRA_CLIENT_ID, playerConfig.clientId);
-                startService(intent);
-                errorCount = 20;
-            } else if (PreferenceUtils.isDebug(this))
-                pasta.showToast(message);
-        }
+        //TODO: error things
+        pasta.onError(this, message);
     }
 
     @Override
@@ -185,63 +81,27 @@ public class PlayerService extends Service {
             return START_STICKY;
         }
 
-        if (spotifyPlayer == null && !intent.getAction().matches(ACTION_INIT)) {
-            pasta.onError(this, "null spotify player");
-            return START_STICKY;
-        }
-
         switch (intent.getAction()) {
             case ACTION_INIT:
-                initPlayer(intent.getStringExtra(EXTRA_TOKEN), intent.getStringExtra(EXTRA_CLIENT_ID));
+                initPlayer();
                 break;
             case ACTION_PLAY:
-                spotifyPlayer.pause();
-
-                trackList = intent.getParcelableArrayListExtra(ACTION_PLAY_EXTRA_TRACKS);
-
-                List<String> trackUris = new ArrayList<>();
-                for (TrackListData trackListData : trackList) {
-                    trackUris.add(trackListData.trackUri);
-                }
-
-                curPos = getInfinitePos(intent.getIntExtra(ACTION_PLAY_EXTRA_START_POS, -1));
-                spotifyPlayConfig = PlayConfig.createFor(trackUris).withTrackIndex(curPos);
-                spotifyPlayer.play(spotifyPlayConfig);
-
-                debugPlaying = true;
+                //TODO: play the intent extra track in the intent extra track list
                 break;
             case ACTION_TOGGLE:
-                if (spotifyPlayerState.playing) {
-                    spotifyPlayer.pause();
-                } else {
-                    spotifyPlayer.resume();
-                }
-
-                debugPlaying = !debugPlaying;
+                //TODO: toggle the playing state
                 break;
             case ACTION_NEXT:
-                spotifyPlayer.pause();
-                curPos = getInfinitePos(curPos + 1);
-                spotifyPlayer.play(spotifyPlayConfig.withTrackIndex(curPos));
-
-                debugPlaying = true;
+                //TODO: play the next track
                 break;
             case ACTION_PREV:
-                spotifyPlayer.pause();
-                curPos = getInfinitePos(curPos - 1);
-                spotifyPlayer.play(spotifyPlayConfig.withTrackIndex(curPos));
-
-                debugPlaying = true;
+                //TODO: play the previous track
                 break;
             case ACTION_MOVE_TRACK:
-                spotifyPlayer.pause();
-                curPos = getInfinitePos(intent.getIntExtra(ACTION_MOVE_TRACK_EXTRA_POS, 0));
-                spotifyPlayer.play(spotifyPlayConfig.withTrackIndex(curPos));
-
-                debugPlaying = true;
+                //TODO: play the intent extra track
                 break;
             case ACTION_MOVE_POS:
-                spotifyPlayer.seekToPosition(intent.getIntExtra(ACTION_MOVE_POS_EXTRA_POS, -1));
+                //TODO: move to the intent extra position
                 return START_STICKY;
         }
         return START_STICKY;
@@ -254,37 +114,17 @@ public class PlayerService extends Service {
     }
 
     private void checkForState() {
-        spotifyPlayer.getPlayerState(new PlayerStateCallback() {
-            @Override
-            public void onPlayerState(PlayerState playerState) {
-                spotifyPlayerState = playerState;
-                if (trackList != null && trackList.size() > 0) {
-                    sendUpdateToUI();
-                }
-
-                if (debugPlaying && !playerState.playing && playerState.durationInMs == 0) {
-                    onError("Unknown error");
-                    return;
-                }
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!spotifyPlayer.isShutdown()) checkForState();
-                    }
-                }, UPDATE_INTERVAL);
-            }
-        });
+        //TODO: I can't remember what this is for but it does something
     }
 
     private void sendUpdateToUI() {
         TrackListData curTrack = trackList.get(curPos);
 
         Intent intent = new Intent(STATE_UPDATE);
-        intent.putExtra(EXTRA_PLAYING, spotifyPlayerState.playing);
+        intent.putExtra(EXTRA_PLAYING, false);
         intent.putExtra(EXTRA_CUR_POSITION, curPos);
-        intent.putExtra(EXTRA_CUR_TIME, spotifyPlayerState.positionInMs);
-        intent.putExtra(EXTRA_MAX_TIME, spotifyPlayerState.durationInMs);
+        intent.putExtra(EXTRA_CUR_TIME, 0);
+        intent.putExtra(EXTRA_MAX_TIME, 0);
         intent.putExtra(EXTRA_CUR_TRACK, curTrack);
         intent.putExtra(EXTRA_TRACK_LIST, trackList);
         sendBroadcast(intent);
@@ -297,7 +137,7 @@ public class PlayerService extends Service {
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(trackList.get(curPos).trackName)
                 .addAction(vectors ? R.drawable.ic_prev : 0, "Previous", PendingIntent.getService(getApplicationContext(), 1, new Intent(getApplicationContext(), PlayerService.class).setAction(PlayerService.ACTION_PREV), PendingIntent.FLAG_UPDATE_CURRENT))
-                .addAction(vectors ? (spotifyPlayerState.playing ? R.drawable.ic_pause : R.drawable.ic_play) : 0, spotifyPlayerState.playing ? "Pause" : "Play", PendingIntent.getService(getApplicationContext(), 1, new Intent(getApplicationContext(), PlayerService.class).setAction(PlayerService.ACTION_TOGGLE), PendingIntent.FLAG_UPDATE_CURRENT))
+                .addAction(vectors ? (false ? R.drawable.ic_pause : R.drawable.ic_play) : 0, false ? "Pause" : "Play", PendingIntent.getService(getApplicationContext(), 1, new Intent(getApplicationContext(), PlayerService.class).setAction(PlayerService.ACTION_TOGGLE), PendingIntent.FLAG_UPDATE_CURRENT))
                 .addAction(vectors ? R.drawable.ic_next : 0, "Next", PendingIntent.getService(getApplicationContext(), 1, new Intent(getApplicationContext(), PlayerService.class).setAction(PlayerService.ACTION_NEXT), PendingIntent.FLAG_UPDATE_CURRENT))
                 .setContentIntent(PendingIntent.getActivities(PlayerService.this, 0, new Intent[]{new Intent(PlayerService.this, PlayerActivity.class)}, 0));
 

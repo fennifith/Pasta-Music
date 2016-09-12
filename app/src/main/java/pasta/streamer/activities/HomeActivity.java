@@ -53,18 +53,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.AlbumSimple;
-import kaaes.spotify.webapi.android.models.AlbumsPager;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistsPager;
-import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.TracksPager;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.data.AlbumListData;
@@ -112,7 +104,7 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
     private Fragment f;
     private long selected;
     private String title;
-    private Map<String, Object> limitMap;
+    private int limit;
     private Pool searchPool;
     private ArrayList searchDatas;
     private boolean preload;
@@ -125,14 +117,13 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
         DataBindingUtil.setContentView(this, R.layout.activity_home);
         ButterKnife.bind(this);
 
-        limitMap = new HashMap<>();
-        limitMap.put(SpotifyService.LIMIT, (PreferenceUtils.getLimit(this) + 1) * 10);
+        limit = (PreferenceUtils.getLimit(this) + 1) * 10;
 
         preload = PreferenceUtils.isPreload(this);
         pasta = (Pasta) getApplicationContext();
         pasta.setScreen(this);
 
-        if (pasta.me == null || pasta.token == null || pasta.spotifyApi == null || pasta.spotifyService == null) {
+        if (false) { //TODO: implement error checking
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -173,18 +164,18 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
                 .withSelectionListEnabledForSingleProfile(false)
                 .build();
 
-        if (pasta.me != null) {
+        if (false) {
             ProfileDrawerItem profile;
             try {
-                profile = new ProfileDrawerItem().withName(pasta.me.display_name.length() > 0 ? pasta.me.display_name : pasta.me.email.split("@")[0].toUpperCase()).withEmail(pasta.me.email);
+                profile = new ProfileDrawerItem().withName("hi").withEmail("hai@something.somethingelse");
             } catch (Exception e) {
                 e.printStackTrace();
-                profile = new ProfileDrawerItem().withName(pasta.me.email.split("@")[0].toUpperCase()).withEmail(pasta.me.email);
+                profile = new ProfileDrawerItem().withName("hi").withEmail("hai@something.somethingelse");
             }
             materialHeader.addProfiles(profile);
 
-            if (pasta.me.images.size() > 0) {
-                Glide.with(this).load(pasta.me.images.get(0).url).into(new SimpleTarget<GlideDrawable>() {
+            if (false) {
+                Glide.with(this).load("something.png").into(new SimpleTarget<GlideDrawable>() {
                     @Override
                     public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> glideAnimation) {
                         materialHeader.getActiveProfile().withIcon(resource);
@@ -429,7 +420,7 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
         ((SearchFragment) f).clear();
 
         if (searchPool != null && searchPool.isExecuting()) searchPool.cancel();
-        searchPool = Async.parallel(new Action<ArrayList<TrackListData>>() {
+        searchPool = Async.parallel(new Action<List<TrackListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -438,33 +429,16 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
 
             @Nullable
             @Override
-            protected ArrayList<TrackListData> run() throws InterruptedException {
-                ArrayList<TrackListData> list = new ArrayList<>();
-                TracksPager tracksPager = null;
-                for (int i = 0; tracksPager == null && i < PreferenceUtils.getRetryCount(HomeActivity.this); i++) {
-                    try {
-                        tracksPager = pasta.spotifyService.searchTracks(searchTerm, limitMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (tracksPager == null) return null;
-
-                for (Track track : tracksPager.tracks.items) {
-                    list.add(new TrackListData(track));
-                }
-
-                return list;
+            protected List<TrackListData> run() throws InterruptedException {
+                return pasta.searchTracks(searchTerm, limit);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<TrackListData> result) {
+            protected void done(@Nullable List<TrackListData> result) {
                 if (result == null || pre) return;
                 ((SearchFragment) f).addData(result);
             }
-        }, new Action<ArrayList<String>>() {
+        }, new Action<List<AlbumListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -473,53 +447,16 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
 
             @Nullable
             @Override
-            protected ArrayList<String> run() throws InterruptedException {
-                ArrayList<String> list = new ArrayList<>();
-                AlbumsPager albumsPager = null;
-                for (int i = 0; albumsPager == null && i < PreferenceUtils.getRetryCount(HomeActivity.this); i++) {
-                    try {
-                        albumsPager = pasta.spotifyService.searchAlbums(searchTerm, limitMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (albumsPager == null) return null;
-
-                for (AlbumSimple album : albumsPager.albums.items) {
-                    list.add(album.id);
-                }
-
-                return list;
+            protected List<AlbumListData> run() throws InterruptedException {
+                return pasta.searchAlbums(searchTerm, limit);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<String> result) {
+            protected void done(@Nullable List<AlbumListData> result) {
                 if (result == null || pre) return;
-                for (final String id : result) {
-                    new Action<AlbumListData>() {
-                        @NonNull
-                        @Override
-                        public String id() {
-                            return "getAlbum";
-                        }
-
-                        @Nullable
-                        @Override
-                        protected AlbumListData run() throws InterruptedException {
-                            return pasta.getAlbum(id);
-                        }
-
-                        @Override
-                        protected void done(@Nullable AlbumListData result) {
-                            if (result == null) return;
-                            ((SearchFragment) f).addData(result);
-                        }
-                    }.execute();
-                }
+                ((SearchFragment) f).addData(result);
             }
-        }, new Action<ArrayList<PlaylistListData>>() {
+        }, new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -528,16 +465,16 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                return pasta.searchPlaylists(searchTerm, limitMap);
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.searchPlaylists(searchTerm, limit);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable List<PlaylistListData> result) {
                 if (result == null || pre) return;
                 ((SearchFragment) f).addData(result);
             }
-        }, new Action<ArrayList<ArtistListData>>() {
+        }, new Action<List<ArtistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -546,30 +483,12 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
 
             @Nullable
             @Override
-            protected ArrayList<ArtistListData> run() throws InterruptedException {
-                ArrayList<ArtistListData> list = new ArrayList<>();
-                ArtistsPager artistsPager = null;
-                for (int i = 0; artistsPager == null && i < PreferenceUtils.getRetryCount(HomeActivity.this); i++) {
-                    try {
-                        artistsPager = pasta.spotifyService.searchArtists(searchTerm, limitMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (artistsPager == null) return null;
-
-                for (Artist artist : artistsPager.artists.items) {
-                    ArtistListData artistData = new ArtistListData(artist);
-                    list.add(artistData);
-                }
-
-                return list;
+            protected List<ArtistListData> run() throws InterruptedException {
+                return pasta.searchArtists(searchTerm, limit);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<ArtistListData> result) {
+            protected void done(@Nullable List<ArtistListData> result) {
                 if (result == null || pre) return;
                 ((SearchFragment) f).addData(result);
             }

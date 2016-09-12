@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -23,7 +24,7 @@ import pasta.streamer.utils.PreferenceUtils;
 public class OmniFragment extends Fragment {
 
     private OmniAdapter adapter;
-    private ArrayList list;
+    private List list;
     private GridLayoutManager manager;
     private boolean isFavoriteBehavior;
 
@@ -84,7 +85,17 @@ public class OmniFragment extends Fragment {
         if (empty != null) empty.setVisibility(View.GONE);
     }
 
-    public void swapData(ArrayList list) {
+    public void addData(List data) {
+        if (adapter != null) adapter.addData(data);
+        else {
+            if (list == null) list = new ArrayList();
+            list.add(data);
+        }
+        if (spinner != null) spinner.setVisibility(View.GONE);
+        if (empty != null) empty.setVisibility(View.GONE);
+    }
+
+    public void swapData(List list) {
         this.list = list;
         if (adapter != null) adapter.swapData(this.list);
         if (spinner != null) spinner.setVisibility(View.GONE);
