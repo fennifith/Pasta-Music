@@ -16,12 +16,8 @@ import android.widget.ListView;
 
 import com.afollestad.async.Action;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Pager;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.data.PlaylistListData;
@@ -34,7 +30,7 @@ public class AddToPlaylistDialog extends AppCompatDialog {
     private TrackListData data;
 
     ListView listView;
-    ArrayList<PlaylistListData> playlists;
+    List<PlaylistListData> playlists;
 
 
     public AddToPlaylistDialog(Context context, TrackListData data) {
@@ -77,9 +73,8 @@ public class AddToPlaylistDialog extends AppCompatDialog {
                     protected Boolean run() throws InterruptedException {
                         try {
                             PlaylistListData playlist = playlists.get(position);
-                            Map<String, Object> tracks = new HashMap<>();
-                            tracks.put("uris", "spotify:track:" + data.trackId);
-                            pasta.spotifyService.addTracksToPlaylist(playlist.playlistOwnerId, playlist.playlistId, tracks, tracks);
+
+                            //TODO: add track (data) to playlist
                         } catch (Exception e) {
                             e.printStackTrace();
                             return false;
@@ -99,7 +94,7 @@ public class AddToPlaylistDialog extends AppCompatDialog {
             }
         });
 
-        new Action<ArrayList<PlaylistListData>>() {
+        new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -108,25 +103,12 @@ public class AddToPlaylistDialog extends AppCompatDialog {
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                Pager<PlaylistSimple> pager;
-                try {
-                    pager = pasta.spotifyService.getMyPlaylists();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-
-                ArrayList<PlaylistListData> playlists = new ArrayList<PlaylistListData>();
-                for (PlaylistSimple playlist : pager.items) {
-                    PlaylistListData data = new PlaylistListData(playlist, pasta.me);
-                    if (data.editable) playlists.add(data);
-                }
-                return playlists;
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.getFavoritePlaylists();
             }
 
             @Override
-            protected void done(@Nullable final ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable final List<PlaylistListData> result) {
                 if (result == null) {
                     pasta.onError(getContext(), "add to playlist dialog");
                     AddToPlaylistDialog.this.dismiss();

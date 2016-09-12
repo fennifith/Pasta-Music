@@ -3,8 +3,6 @@ package pasta.streamer.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import kaaes.spotify.webapi.android.models.Category;
-
 public class CategoryListData implements Parcelable {
     public static final Creator<CategoryListData> CREATOR = new Creator<CategoryListData>() {
         public CategoryListData createFromParcel(Parcel in) {
@@ -19,16 +17,6 @@ public class CategoryListData implements Parcelable {
     public String categoryId;
     public String categoryName;
     public String categoryImage;
-
-    public CategoryListData(Category category) {
-        categoryId = category.id;
-        categoryName = category.name;
-        try {
-            categoryImage = category.icons.get(0).url;
-        } catch (IndexOutOfBoundsException e) {
-            categoryImage = "";
-        }
-    }
 
     public CategoryListData(Parcel in) {
         ReadFromParcel(in);

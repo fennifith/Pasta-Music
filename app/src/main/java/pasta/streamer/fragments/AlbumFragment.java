@@ -34,7 +34,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -72,7 +72,7 @@ public class AlbumFragment extends FullScreenFragment {
     TextView tracksLength;
 
     private AlbumListData data;
-    private ArrayList<TrackListData> trackList;
+    private List<TrackListData> trackList;
     private Pasta pasta;
     private Action action;
     private int selectedOrder;
@@ -137,7 +137,7 @@ public class AlbumFragment extends FullScreenFragment {
         recycler.setLayoutManager(new GridLayoutManager(getContext(), PreferenceUtils.isListTracks(getContext()) ? 1 : PreferenceUtils.getColumnNumber(getContext(), metrics.widthPixels > metrics.heightPixels)));
         recycler.setHasFixedSize(true);
 
-        action = new Action<ArrayList<TrackListData>>() {
+        action = new Action<List<TrackListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -146,12 +146,12 @@ public class AlbumFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<TrackListData> run() throws InterruptedException {
+            protected List<TrackListData> run() throws InterruptedException {
                 return pasta.getTracks(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<TrackListData> result) {
+            protected void done(@Nullable List<TrackListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) {
                     pasta.onCriticalError(getContext(), "album tracks action");

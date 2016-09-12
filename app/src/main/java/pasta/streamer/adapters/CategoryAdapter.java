@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import pasta.streamer.R;
 import pasta.streamer.data.CategoryListData;
@@ -22,14 +22,14 @@ import pasta.streamer.fragments.CategoryFragment;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     AppCompatActivity activity;
-    ArrayList<CategoryListData> list;
+    List<CategoryListData> list;
 
-    public CategoryAdapter(AppCompatActivity activity, ArrayList<CategoryListData> list) {
+    public CategoryAdapter(AppCompatActivity activity, List<CategoryListData> list) {
         this.activity = activity;
         this.list = list;
     }
 
-    public void swapData(ArrayList<CategoryListData> list) {
+    public void swapData(List<CategoryListData> list) {
         this.list = list;
         notifyDataSetChanged();
     }

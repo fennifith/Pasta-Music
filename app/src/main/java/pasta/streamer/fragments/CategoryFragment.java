@@ -16,21 +16,15 @@ import android.widget.ProgressBar;
 import com.afollestad.async.Action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
-import kaaes.spotify.webapi.android.models.PlaylistsPager;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.adapters.OmniAdapter;
 import pasta.streamer.data.CategoryListData;
 import pasta.streamer.data.PlaylistListData;
 import pasta.streamer.utils.PreferenceUtils;
-import pasta.streamer.utils.StaticUtils;
 
 public class CategoryFragment extends FullScreenFragment {
 
@@ -45,7 +39,7 @@ public class CategoryFragment extends FullScreenFragment {
     GridLayoutManager manager;
     CategoryListData data;
     Action action;
-    Map<String, Object> limitMap;
+    int limit;
     Pasta pasta;
 
     @Nullable
@@ -56,8 +50,7 @@ public class CategoryFragment extends FullScreenFragment {
 
         pasta = (Pasta) getContext().getApplicationContext();
         data = getArguments().getParcelable("category");
-        limitMap = new HashMap<>();
-        limitMap.put(SpotifyService.LIMIT, (PreferenceUtils.getLimit(getContext()) + 1) * 10);
+        limit = (PreferenceUtils.getLimit(getContext()) + 1) * 10;
 
         toolbar.setTitle(data.categoryName);
         toolbar.setNavigationIcon(R.drawable.ic_back);
@@ -98,23 +91,7 @@ public class CategoryFragment extends FullScreenFragment {
             @Nullable
             @Override
             protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                PlaylistsPager pager = null;
-                for (int i = 0; pager == null && i < PreferenceUtils.getRetryCount(getContext()); i++) {
-                    try {
-                        pager = pasta.spotifyService.getPlaylistsForCategory(data.categoryId, limitMap);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (pager == null) return null;
-
-                ArrayList<PlaylistListData> list = new ArrayList<>();
-                for (PlaylistSimple playlist : pager.playlists.items) {
-                    list.add(new PlaylistListData(playlist, pasta.me));
-                }
-                return list;
+                pasta.getPlaylists(data);
             }
 
             @Override

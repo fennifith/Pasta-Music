@@ -8,8 +8,6 @@ import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 
-import com.spotify.sdk.android.player.PlaybackBitrate;
-
 import pasta.streamer.R;
 
 public class PreferenceUtils {
@@ -69,16 +67,8 @@ public class PreferenceUtils {
         return PreferenceManager.getDefaultSharedPreferences(context).getInt(ACCENT, ContextCompat.getColor(context, R.color.accent));
     }
 
-    public static PlaybackBitrate getQuality(Context context) {
-        return PlaybackBitrate.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString(QUALITY, PlaybackBitrate.BITRATE_NORMAL.toString()));
-    }
-
-    public static int getSelectedQuality(Context context) {
-        String s = PreferenceManager.getDefaultSharedPreferences(context).getString(QUALITY, PlaybackBitrate.BITRATE_NORMAL.toString());
-        if (s.matches(PlaybackBitrate.BITRATE_LOW.toString())) return 0;
-        else if (s.matches(PlaybackBitrate.BITRATE_NORMAL.toString())) return 1;
-        else if (s.matches(PlaybackBitrate.BITRATE_HIGH.toString())) return 2;
-        else return -1;
+    public static int getQuality(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getInt(QUALITY, 1);
     }
 
     public static AlertDialog getOrderingDialog(final Context context, DialogInterface.OnClickListener onItemListener, DialogInterface.OnClickListener onClickListener) {

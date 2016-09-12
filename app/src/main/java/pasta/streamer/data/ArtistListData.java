@@ -7,9 +7,6 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.ArtistSimple;
-
 public class ArtistListData implements Parcelable {
     public static final Parcelable.Creator<ArtistListData> CREATOR = new Parcelable.Creator<ArtistListData>() {
         public ArtistListData createFromParcel(Parcel in) {
@@ -30,30 +27,6 @@ public class ArtistListData implements Parcelable {
 
     @Nullable
     public List<String> genres;
-
-    public ArtistListData(Artist artist) {
-        artistName = artist.name;
-        artistId = artist.id;
-
-        if (artist.images.size() > 1) {
-            artistImage = artist.images.get(1).url;
-            artistImageLarge = artist.images.get(0).url;
-        } else if (artist.images.size() > 0) {
-            artistImage = artist.images.get(0).url;
-            artistImageLarge = artist.images.get(0).url;
-        } else {
-            artistImage = "";
-            artistImageLarge = "";
-        }
-
-        followers = artist.followers.total;
-        genres = artist.genres;
-    }
-
-    public ArtistListData(ArtistSimple artist) {
-        artistName = artist.name;
-        artistId = artist.id;
-    }
 
     public ArtistListData(Parcel in) {
         ReadFromParcel(in);

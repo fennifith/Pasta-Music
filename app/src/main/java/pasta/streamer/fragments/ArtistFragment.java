@@ -35,17 +35,10 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.google.android.flexbox.FlexboxLayout;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.Artists;
-import kaaes.spotify.webapi.android.models.Pager;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.activities.HomeActivity;
@@ -88,7 +81,7 @@ public class ArtistFragment extends FullScreenFragment {
     private Pool pool;
     private boolean palette;
     private Pasta pasta;
-    private Map<String, Object> limitMap;
+    int limit
 
     @Nullable
     @Override
@@ -100,8 +93,7 @@ public class ArtistFragment extends FullScreenFragment {
 
         palette = PreferenceUtils.isPalette(getContext());
         pasta = (Pasta) getContext().getApplicationContext();
-        limitMap = new HashMap<>();
-        limitMap.put(SpotifyService.LIMIT, (PreferenceUtils.getLimit(getContext()) + 1) * 10);
+        limit = (PreferenceUtils.getLimit(getContext()) + 1) * 10);
 
         setHasOptionsMenu(true);
         toolbar.setNavigationIcon(R.drawable.ic_back);
@@ -177,7 +169,7 @@ public class ArtistFragment extends FullScreenFragment {
         adapter = new SectionedOmniAdapter((AppCompatActivity) getActivity(), null);
         recycler.setAdapter(adapter);
 
-        pool = Async.parallel(new Action<ArrayList<TrackListData>>() {
+        pool = Async.parallel(new Action<List<TrackListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -186,17 +178,17 @@ public class ArtistFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<TrackListData> run() throws InterruptedException {
+            protected List<TrackListData> run() throws InterruptedException {
                 return pasta.getTracks(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<TrackListData> result) {
+            protected void done(@Nullable List<TrackListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) pasta.onError(getActivity(), "artist tracks action");
                 else adapter.addData(result);
             }
-        }, new Action<ArrayList<String>>() {
+        }, new Action<List<AlbumListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -205,62 +197,21 @@ public class ArtistFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<String> run() throws InterruptedException {
-                Pager<Album> albums = getAlbums();
-                if (albums == null) return null;
-
-                ArrayList<String> list = new ArrayList<>();
-                for (Album album : albums.items) {
-                    list.add(album.id);
-                }
-
-                return list;
-            }
-
-            @Nullable
-            private Pager<Album> getAlbums() throws InterruptedException {
-                Pager<Album> albums = null;
-                for (int i = 0; albums == null && i < PreferenceUtils.getRetryCount(getContext()); i++) {
-                    try {
-                        albums = pasta.spotifyService.getArtistAlbums(data.artistId);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                return albums;
+            protected List<AlbumListData> run() throws InterruptedException {
+                return pasta.getAlbums(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<String> result) {
+            protected void done(@Nullable List<AlbumListData> result) {
                 if (result == null) {
                     pasta.onError(getActivity(), "artist albums action");
                     return;
                 }
-                for (final String id : result) {
-                    new Action<AlbumListData>() {
-                        @NonNull
-                        @Override
-                        public String id() {
-                            return "getAlbum";
-                        }
 
-                        @Nullable
-                        @Override
-                        protected AlbumListData run() throws InterruptedException {
-                            return pasta.getAlbum(id);
-                        }
-
-                        @Override
-                        protected void done(@Nullable AlbumListData result) {
-                            if (spinner != null) spinner.setVisibility(View.GONE);
-                            if (result != null) adapter.addData(result);
-                        }
-                    }.execute();
-                }
+                if (spinner != null) spinner.setVisibility(View.GONE);
+                if (adapter != null) adapter.addData(result);
             }
-        }, new Action<ArrayList<PlaylistListData>>() {
+        }, new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -269,17 +220,17 @@ public class ArtistFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                return pasta.searchPlaylists(data.artistName, limitMap);
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.searchPlaylists(data.artistName, limit);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable List<PlaylistListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) pasta.onError(getContext(), "artist playlists action");
                 else adapter.addData(result);
             }
-        }, new Action<ArrayList<ArtistListData>>() {
+        }, new Action<List<ArtistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -288,36 +239,12 @@ public class ArtistFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<ArtistListData> run() throws InterruptedException {
-                Artists artists = getArtists();
-                if (artists == null) return null;
-
-                ArrayList<ArtistListData> list = new ArrayList<>();
-                for (Artist artist : artists.artists) {
-                    ArtistListData artistData = new ArtistListData(artist);
-                    list.add(artistData);
-                }
-
-                return list;
-            }
-
-            @Nullable
-            private Artists getArtists() throws InterruptedException {
-                Artists artists = null;
-                for (int i = 0; artists == null && i < PreferenceUtils.getRetryCount(getContext()); i++) {
-                    try {
-                        artists = pasta.spotifyService.getRelatedArtists(data.artistId);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                return artists;
+            protected List<ArtistListData> run() throws InterruptedException {
+                return pasta.getArtists(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<ArtistListData> result) {
+            protected void done(@Nullable List<ArtistListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null)
                     pasta.onError(getContext(), "artist related artists action");

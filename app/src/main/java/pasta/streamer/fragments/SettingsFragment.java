@@ -1,12 +1,9 @@
 package pasta.streamer.fragments;
 
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.ColorInt;
@@ -18,10 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.afollestad.materialdialogs.color.ColorChooserDialog;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.player.PlaybackBitrate;
-
-import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -98,61 +91,6 @@ public class SettingsFragment extends FabFragment {
                 dialog.dismiss();
             }
         }).create().show();
-    }
-
-    @OnClick(R.id.signout)
-    public void signOut() {
-        new AlertDialog.Builder(getContext()).setTitle(R.string.sign_out).setMessage(R.string.sign_out_msg).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                AuthenticationClient.clearCookies(getContext().getApplicationContext());
-
-                try {
-                    File cache = getContext().getCacheDir();
-                    File appDir = new File(cache.getParent());
-                    if(appDir.exists()){
-                        String[] children = appDir.list();
-                        for(String child : children){
-                            if(!child.equals("lib")) deleteDir(new File(appDir, child));
-                        }
-                    }
-
-                    getActivity().finish();
-                } catch (Exception e) {
-                    e.printStackTrace();
-
-                    try {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        intent.setData(Uri.parse("package:pasta.streamer"));
-                        startActivity(intent);
-                    } catch (ActivityNotFoundException ex) {
-                        Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-                        startActivity(intent);
-                    }
-
-                    pasta.showToast(pasta.getString(R.string.clear_data_msg));
-                }
-            }
-        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).create().show();
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String child : children) {
-                boolean success = deleteDir(new File(dir, child));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-
-        return dir.delete();
     }
 
     @OnCheckedChanged(R.id.darkmode)
@@ -238,7 +176,7 @@ public class SettingsFragment extends FabFragment {
     public void setQuality() {
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.quality)
-                .setSingleChoiceItems(R.array.qualities, PreferenceUtils.getSelectedQuality(getContext()), new DialogInterface.OnClickListener() {
+                .setSingleChoiceItems(R.array.qualities, PreferenceUtils.getQuality(getContext()), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         selectedQuality = which;
@@ -248,13 +186,13 @@ public class SettingsFragment extends FabFragment {
             public void onClick(DialogInterface d, int id) {
                 switch (selectedQuality) {
                     case 0:
-                        prefs.edit().putString(PreferenceUtils.QUALITY, PlaybackBitrate.BITRATE_LOW.toString()).apply();
+                        prefs.edit().putInt(PreferenceUtils.QUALITY, 0).apply();
                         break;
                     case 1:
-                        prefs.edit().putString(PreferenceUtils.QUALITY, PlaybackBitrate.BITRATE_NORMAL.toString()).apply();
+                        prefs.edit().putInt(PreferenceUtils.QUALITY, 1).apply();
                         break;
                     case 2:
-                        prefs.edit().putString(PreferenceUtils.QUALITY, PlaybackBitrate.BITRATE_HIGH.toString()).apply();
+                        prefs.edit().putInt(PreferenceUtils.QUALITY, 2).apply();
                         break;
                 }
                 pasta.showToast(getString(R.string.restart_msg));

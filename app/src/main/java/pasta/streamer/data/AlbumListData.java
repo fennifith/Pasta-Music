@@ -6,9 +6,6 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.ArtistSimple;
-
 public class AlbumListData implements Parcelable {
     public static final Creator<AlbumListData> CREATOR = new Creator<AlbumListData>() {
         public AlbumListData createFromParcel(Parcel in) {
@@ -27,21 +24,6 @@ public class AlbumListData implements Parcelable {
     public String albumImageLarge;
     public List<ArtistListData> artists;
     public int tracks;
-
-    public AlbumListData(Album album) {
-        albumName = album.name;
-        albumId = album.id;
-        albumDate = album.release_date;
-        albumImage = album.images.get(1).url;
-        albumImageLarge = album.images.get(0).url;
-
-        artists = new ArrayList<>();
-        for (ArtistSimple artist : album.artists) {
-            artists.add(new ArtistListData(artist));
-        }
-
-        tracks = album.tracks.items.size();
-    }
 
     public AlbumListData(Parcel in) {
         ReadFromParcel(in);

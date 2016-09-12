@@ -37,8 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kaaes.spotify.webapi.android.models.TrackToRemove;
-import kaaes.spotify.webapi.android.models.TracksToRemove;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.activities.PlayerActivity;
@@ -56,15 +54,15 @@ import pasta.streamer.views.CustomImageView;
 
 public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> {
 
-    private ArrayList<TrackListData> original;
-    private ArrayList<TrackListData> list;
+    private List<TrackListData> original;
+    private List<TrackListData> list;
     private AppCompatActivity activity;
     private Pasta pasta;
     private int menuRes = R.menu.menu_track;
     private PlaylistListData playlistdata;
     private boolean thumbnails, cards, trackList, palette, dark;
 
-    public TrackAdapter(AppCompatActivity activity, ArrayList<TrackListData> list) {
+    public TrackAdapter(AppCompatActivity activity, List<TrackListData> list) {
         original = list;
         if (list != null) {
             this.list = new ArrayList<>();
@@ -93,7 +91,7 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
         menuRes = R.menu.menu_album_track;
     }
 
-    public void swapData(ArrayList<TrackListData> list) {
+    public void swapData(List<TrackListData> list) {
         original = list;
         this.list = new ArrayList<>();
         this.list.addAll(list);
@@ -415,14 +413,8 @@ public class TrackAdapter extends RecyclerView.Adapter<TrackAdapter.ViewHolder> 
                                         @Nullable
                                         @Override
                                         protected Boolean run() throws InterruptedException {
-                                            TracksToRemove tracksRemove = new TracksToRemove();
-                                            TrackToRemove trackRemove = new TrackToRemove();
-                                            trackRemove.uri = list.get(holder.getAdapterPosition() - 1).trackUri;
-                                            tracksRemove.tracks = Collections.singletonList(trackRemove);
-                                            if (playlistdata != null) {
-                                                pasta.spotifyService.removeTracksFromPlaylist(playlistdata.playlistOwnerId, playlistdata.playlistId, tracksRemove);
-                                                return true;
-                                            } else return false;
+                                            //TODO: remove tracks
+                                            return false;
                                         }
 
                                         @Override

@@ -34,7 +34,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -74,7 +74,7 @@ public class PlaylistFragment extends FullScreenFragment {
 
     private Pasta pasta;
     private PlaylistListData data;
-    private ArrayList<TrackListData> trackList;
+    private List<TrackListData> trackList;
     private Action action;
     private int selectedOrder;
     private TrackAdapter adapter;
@@ -113,12 +113,12 @@ public class PlaylistFragment extends FullScreenFragment {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         adapter = new TrackAdapter((AppCompatActivity) getActivity(), null);
-        if (data.editable) adapter.setPlaylistBehavior(data);
+        adapter.setPlaylistBehavior(data);
         recycler.setAdapter(adapter);
         recycler.setLayoutManager(new GridLayoutManager(getContext(), PreferenceUtils.isListTracks(getContext()) ? 1 : PreferenceUtils.getColumnNumber(getContext(), metrics.widthPixels > metrics.heightPixels)));
         recycler.setHasFixedSize(true);
 
-        action = new Action<ArrayList<TrackListData>>() {
+        action = new Action<List<TrackListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -127,12 +127,12 @@ public class PlaylistFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<TrackListData> run() throws InterruptedException {
+            protected List<TrackListData> run() throws InterruptedException {
                 return pasta.getTracks(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<TrackListData> result) {
+            protected void done(@Nullable List<TrackListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) {
                     pasta.onCriticalError(getContext(), "playlist tracks action");
@@ -212,9 +212,7 @@ public class PlaylistFragment extends FullScreenFragment {
     }
 
     public void modifyMenu(final Menu menu) {
-        if (data.editable) {
-            menu.findItem(R.id.action_edit).setVisible(true);
-        }
+        menu.findItem(R.id.action_edit).setVisible(true);
 
         new Action<Boolean>() {
             @NonNull

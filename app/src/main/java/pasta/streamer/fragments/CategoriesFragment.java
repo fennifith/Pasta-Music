@@ -15,18 +15,15 @@ import android.widget.ProgressBar;
 
 import com.afollestad.async.Action;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import kaaes.spotify.webapi.android.models.CategoriesPager;
-import kaaes.spotify.webapi.android.models.Category;
 import pasta.streamer.Pasta;
 import pasta.streamer.R;
 import pasta.streamer.adapters.CategoryAdapter;
 import pasta.streamer.data.CategoryListData;
 import pasta.streamer.utils.PreferenceUtils;
-import pasta.streamer.utils.StaticUtils;
 
 public class CategoriesFragment extends Fragment {
 
@@ -55,7 +52,7 @@ public class CategoriesFragment extends Fragment {
         recycler.setAdapter(adapter);
         recycler.setHasFixedSize(true);
 
-        action = new Action<ArrayList<CategoryListData>>() {
+        action = new Action<List<CategoryListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -64,28 +61,12 @@ public class CategoriesFragment extends Fragment {
 
             @Nullable
             @Override
-            protected ArrayList<CategoryListData> run() throws InterruptedException {
-                CategoriesPager categories = null;
-                for (int i = 0; categories == null && i < PreferenceUtils.getRetryCount(getContext()); i++) {
-                    try {
-                        categories = pasta.spotifyService.getCategories(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        if (StaticUtils.shouldResendRequest(e)) Thread.sleep(200);
-                        else break;
-                    }
-                }
-                if (categories == null) return null;
-
-                ArrayList<CategoryListData> list = new ArrayList<>();
-                for (Category category : categories.categories.items) {
-                    list.add(new CategoryListData(category));
-                }
-                return list;
+            protected List<CategoryListData> run() throws InterruptedException {
+                return pasta.getCategories();
             }
 
             @Override
-            protected void done(@Nullable ArrayList<CategoryListData> result) {
+            protected void done(@Nullable List<CategoryListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) {
                     pasta.onCriticalError(getActivity(), "categories action");

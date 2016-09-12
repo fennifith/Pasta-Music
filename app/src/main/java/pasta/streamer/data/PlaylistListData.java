@@ -3,11 +3,6 @@ package pasta.streamer.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import kaaes.spotify.webapi.android.models.Image;
-import kaaes.spotify.webapi.android.models.Playlist;
-import kaaes.spotify.webapi.android.models.PlaylistSimple;
-import kaaes.spotify.webapi.android.models.UserPrivate;
-
 public class PlaylistListData implements Parcelable {
     public static final Parcelable.Creator<PlaylistListData> CREATOR = new Parcelable.Creator<PlaylistListData>() {
         public PlaylistListData createFromParcel(Parcel in) {
@@ -26,61 +21,6 @@ public class PlaylistListData implements Parcelable {
     public String playlistOwnerName;
     public String playlistOwnerId;
     public int tracks;
-    public boolean editable;
-    public boolean playlistPublic;
-
-    public PlaylistListData(Playlist playlist, UserPrivate me) {
-        playlistName = playlist.name;
-        playlistId = playlist.id;
-        tracks = playlist.tracks.total;
-        playlistOwnerName = playlist.owner.display_name;
-        playlistOwnerId = playlist.owner.id;
-        editable = playlist.owner.id.matches(me.id);
-        playlistPublic = playlist.is_public;
-
-        try {
-            playlistImage = playlist.images.get(playlist.images.size() / 2).url;
-        } catch (IndexOutOfBoundsException e) {
-            return;
-        }
-
-        playlistImageLarge = "";
-        int res = 0;
-        for (Image image : playlist.images) {
-            if (image.height * image.width > res) {
-                playlistImageLarge = image.url;
-                res = image.height * image.width;
-            }
-        }
-    }
-
-    public PlaylistListData(PlaylistSimple playlist, UserPrivate me) {
-        playlistName = playlist.name;
-        playlistId = playlist.id;
-        tracks = playlist.tracks.total;
-        playlistOwnerName = playlist.owner.display_name;
-        playlistOwnerId = playlist.owner.id;
-        editable = playlist.owner.id.matches(me.id);
-        if (editable) playlistPublic = playlist.is_public;
-
-        try {
-            playlistImage = playlist.images.get(playlist.images.size() / 2).url;
-        } catch (IndexOutOfBoundsException e) {
-            return;
-        }
-
-        playlistImageLarge = "";
-        int res = 0;
-        for (Image image : playlist.images) {
-            try {
-                if (image.height * image.width > res) {
-                    playlistImageLarge = image.url;
-                    res = image.height * image.width;
-                }
-            } catch (NullPointerException ignored) {
-            }
-        }
-    }
 
     public PlaylistListData(Parcel in) {
         ReadFromParcel(in);
@@ -94,8 +34,6 @@ public class PlaylistListData implements Parcelable {
         playlistOwnerName = in.readString();
         playlistOwnerId = in.readString();
         tracks = in.readInt();
-        editable = in.readInt() == 1;
-        playlistPublic = in.readInt() == 1;
     }
 
     @Override
@@ -107,8 +45,6 @@ public class PlaylistListData implements Parcelable {
         out.writeString(playlistOwnerName);
         out.writeString(playlistOwnerId);
         out.writeInt(tracks);
-        out.writeInt(editable ? 1 : 0);
-        out.writeInt(playlistPublic ? 1 : 0);
     }
 
     @Override
