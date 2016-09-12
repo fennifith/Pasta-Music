@@ -619,9 +619,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
                             }
                         });
 
-                        if (((PlaylistListData) list.get(holder.getAdapterPosition())).editable)
-                            popup.getMenu().findItem(R.id.action_edit).setVisible(true);
-
+                        popup.getMenu().findItem(R.id.action_edit).setVisible(true);
                         popup.show();
                     }
                 });

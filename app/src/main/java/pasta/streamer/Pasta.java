@@ -16,6 +16,7 @@ import java.util.List;
 
 import pasta.streamer.data.AlbumListData;
 import pasta.streamer.data.ArtistListData;
+import pasta.streamer.data.CategoryListData;
 import pasta.streamer.data.PlaylistListData;
 import pasta.streamer.data.TrackListData;
 import pasta.streamer.dialogs.ErrorDialog;
@@ -178,6 +179,35 @@ public class Pasta extends Application {
 
     @Nullable
     public List<TrackListData> getTracks(AlbumListData data) throws InterruptedException {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<TrackListData> getTracks(CategoryListData data) {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<AlbumListData> getAlbums(ArtistListData data) {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<PlaylistListData> getPlaylists(ArtistListData data) {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<PlaylistListData> getPlaylists(CategoryListData data) {
+        return new ArrayList<>();
+    }
+
+    @Nullable
+    public List<ArtistListData> getArtists(ArtistListData data) {
+        return new ArrayList<>();
+    }
+
+    public List<CategoryListData> getCategories() {
         return new ArrayList<>();
     }
 

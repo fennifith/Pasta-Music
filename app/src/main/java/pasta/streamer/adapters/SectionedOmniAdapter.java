@@ -475,11 +475,8 @@ public class SectionedOmniAdapter extends RecyclerView.Adapter<SectionedOmniAdap
 
                         final MenuItem fav = popup.getMenu().findItem(R.id.action_fav);
 
-                        if (((PlaylistListData) list.get(holder.getAdapterPosition())).editable) {
-                            fav.setVisible(false);
-                            popup.show();
-                            return;
-                        }
+                        fav.setVisible(false);
+                        popup.show();
 
                         new Action<Boolean>() {
                             @NonNull

@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import com.afollestad.async.Action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -81,7 +82,7 @@ public class CategoryFragment extends FullScreenFragment {
         recycler.setAdapter(adapter);
         recycler.setHasFixedSize(true);
 
-        action = new Action<ArrayList<PlaylistListData>>() {
+        action = new Action<List<PlaylistListData>>() {
             @NonNull
             @Override
             public String id() {
@@ -90,12 +91,12 @@ public class CategoryFragment extends FullScreenFragment {
 
             @Nullable
             @Override
-            protected ArrayList<PlaylistListData> run() throws InterruptedException {
-                pasta.getPlaylists(data);
+            protected List<PlaylistListData> run() throws InterruptedException {
+                return pasta.getPlaylists(data);
             }
 
             @Override
-            protected void done(@Nullable ArrayList<PlaylistListData> result) {
+            protected void done(@Nullable List<PlaylistListData> result) {
                 if (spinner != null) spinner.setVisibility(View.GONE);
                 if (result == null) {
                     pasta.onCriticalError(getActivity(), "category playlists action");

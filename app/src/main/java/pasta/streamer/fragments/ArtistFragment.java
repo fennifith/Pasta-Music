@@ -81,7 +81,7 @@ public class ArtistFragment extends FullScreenFragment {
     private Pool pool;
     private boolean palette;
     private Pasta pasta;
-    int limit
+    int limit;
 
     @Nullable
     @Override
@@ -93,7 +93,7 @@ public class ArtistFragment extends FullScreenFragment {
 
         palette = PreferenceUtils.isPalette(getContext());
         pasta = (Pasta) getContext().getApplicationContext();
-        limit = (PreferenceUtils.getLimit(getContext()) + 1) * 10);
+        limit = (PreferenceUtils.getLimit(getContext()) + 1) * 10;
 
         setHasOptionsMenu(true);
         toolbar.setNavigationIcon(R.drawable.ic_back);
