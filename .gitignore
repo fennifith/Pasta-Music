@@ -30,11 +30,3 @@ proguard/
 
 # Android Studio captures folder
 captures/
-.directory
-.idea/.name
-.idea/compiler.xml
-.idea/copyright/
-.idea/encodings.xml
-.idea/gradle.xml
-.idea/misc.xml
-.idea/workspace.xml
