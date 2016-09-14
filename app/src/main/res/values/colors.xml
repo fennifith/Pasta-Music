@@ -3,11 +3,11 @@
 
     <color name="colorPrimary">#303030</color>
     <color name="colorPrimaryDark">#212121</color>
-    <color name="colorAccent">#00C853</color>
+    <color name="colorAccent">#448AFF</color>
 
-    <color name="colorBackgroundLight">#fafafa</color>
+    <color name="colorBackgroundLight">#FAFAFA</color>
     <color name="colorBackgroundDark">#303030</color>
-    <color name="colorBackgroundFloatingLight">#ffffff</color>
+    <color name="colorBackgroundFloatingLight">#FFFFFF</color>
     <color name="colorBackgroundFloatingDark">#424242</color>
 
 </resources>
