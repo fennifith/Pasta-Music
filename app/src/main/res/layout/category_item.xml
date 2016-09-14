@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:padding="4dp" >
 
-    <pasta.streamer.views.SquareImageView
+    <pasta.music.views.SquareImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/image"

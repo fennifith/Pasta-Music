@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="pasta.streamer"
+    package="pasta.music"
     android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
-        android:name=".Pasta"
+        android:name="pasta.music.Pasta"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,7 +20,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 
         <activity
-            android:name=".activities.MainActivity"
+            android:name="pasta.music.activities.MainActivity"
             android:configChanges="orientation|screenSize"
             android:theme="@style/StartTheme">
             <intent-filter>
@@ -31,23 +31,23 @@
         </activity>
 
         <activity
-            android:name=".activities.IntroActivity"
+            android:name="pasta.music.activities.IntroActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <activity
-            android:name=".activities.HomeActivity"
+            android:name="pasta.music.activities.HomeActivity"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.Transparent"/>
 
         <activity
-            android:name=".activities.PlayerActivity"
+            android:name="pasta.music.activities.PlayerActivity"
             android:label="@string/title_activity_playing"
             android:launchMode="singleInstance"
             android:theme="@style/AppTheme.Transparent"
             android:configChanges="orientation|screenSize"/>
 
         <service
-            android:name=".PlayerService"
+            android:name="pasta.music.PlayerService"
             android:stopWithTask="true"
             android:process=":playerservice" />
     </application>

@@ -2,9 +2,9 @@
 <layout>
     <data>
 
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+        <import type="pasta.music.utils.PreferenceUtils" />
 
-        <import type="pasta.streamer.utils.ImageUtils" />
+        <import type="pasta.music.utils.ImageUtils" />
     </data>
 
     <android.support.v4.widget.DrawerLayout

@@ -29,7 +29,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
-import pasta.streamer.R;
+import pasta.music.R;
 
 
 /**

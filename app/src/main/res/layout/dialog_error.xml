@@ -14,7 +14,7 @@
         android:gravity="center"
         android:layout_gravity="center">
 
-        <pasta.streamer.views.SquareImageView
+        <pasta.music.views.SquareImageView
             android:layout_width="128dp"
             android:layout_height="wrap_content"
             android:tint="?android:textColorPrimary"

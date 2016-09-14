@@ -1,9 +1,9 @@
 <layout>
     <data>
 
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+        <import type="pasta.music.utils.PreferenceUtils" />
 
-        <import type="pasta.streamer.utils.ImageUtils" />
+        <import type="pasta.music.utils.ImageUtils" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,7 +32,7 @@
                 app:expandedTitleTextAppearance="?android:textAppearanceLarge"
                 android:fitsSystemWindows="true" >
 
-                <pasta.streamer.views.SquareImageView
+                <pasta.music.views.SquareImageView
                     android:layout_width="288dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/header"
@@ -42,7 +42,7 @@
                     android:fitsSystemWindows="true"
                     android:layout_gravity="start"/>
 
-                <pasta.streamer.views.SquareImageView
+                <pasta.music.views.SquareImageView
                     android:layout_width="288dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/image_gradient"

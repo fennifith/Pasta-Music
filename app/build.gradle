@@ -5,7 +5,7 @@ android {
     buildToolsVersion '23.0.3'
 
     defaultConfig {
-        applicationId "pasta.streamer"
+        applicationId "pasta.music"
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 9

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="4dp">
 
-    <pasta.streamer.views.RatioImageView
+    <pasta.music.views.RatioImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
 
         </LinearLayout>
 
-        <pasta.streamer.views.CustomImageView
+        <pasta.music.views.CustomImageView
             android:layout_width="56dp"
             android:layout_height="68dp"
             android:layout_gravity="bottom|end"

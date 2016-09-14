@@ -20,7 +20,7 @@
         android:progressTint="?android:textColorPrimaryInverse"
         android:layout_marginTop="-8dp" />
 
-    <pasta.streamer.views.SquareImageView
+    <pasta.music.views.SquareImageView
         android:id="@+id/art"
         android:layout_width="@dimen/playbar_size"
         android:layout_height="@dimen/playbar_size"
@@ -67,7 +67,7 @@
                 android:layout_marginLeft="8dp" />
         </LinearLayout>
 
-        <pasta.streamer.views.SquareImageView
+        <pasta.music.views.SquareImageView
             android:id="@+id/toggle"
             android:layout_width="@dimen/playbar_size"
             android:layout_height="@dimen/playbar_size"
@@ -78,7 +78,7 @@
             android:padding="12dp"
             app:srcCompat="@drawable/ic_play" />
 
-        <pasta.streamer.views.SquareImageView
+        <pasta.music.views.SquareImageView
             android:id="@+id/next"
             android:layout_width="@dimen/playbar_size"
             android:layout_height="@dimen/playbar_size"

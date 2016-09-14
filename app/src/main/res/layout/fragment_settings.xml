@@ -2,7 +2,7 @@
 <layout>
     <data>
 
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+        <import type="pasta.music.utils.PreferenceUtils" />
     </data>
 
     <android.support.v4.widget.NestedScrollView android:layout_width="match_parent"
@@ -183,7 +183,7 @@
                         android:gravity="center_vertical|start"
                         android:textColor="?android:textColorPrimary" />
 
-                    <pasta.streamer.views.CircleImageView
+                    <pasta.music.views.CircleImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:id="@+id/primary_color"
@@ -209,7 +209,7 @@
                         android:gravity="center_vertical|start"
                         android:textColor="?android:textColorPrimary"/>
 
-                    <pasta.streamer.views.CircleImageView
+                    <pasta.music.views.CircleImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:id="@+id/accent_color"

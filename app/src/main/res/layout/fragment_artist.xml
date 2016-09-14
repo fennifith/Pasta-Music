@@ -1,7 +1,7 @@
 <layout>
     <data>
 
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+        <import type="pasta.music.utils.PreferenceUtils" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -37,7 +37,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent">
 
-                        <pasta.streamer.views.SecondSquareImageView
+                        <pasta.music.views.SecondSquareImageView
                             android:id="@+id/header"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
@@ -45,7 +45,7 @@
                             android:scaleType="centerCrop"
                             app:srcCompat="@drawable/preload" />
 
-                        <pasta.streamer.views.SecondSquareImageView
+                        <pasta.music.views.SecondSquareImageView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical|top"

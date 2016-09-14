@@ -10,7 +10,7 @@
         android:layout_margin="4dp"
         android:orientation="horizontal">
 
-        <pasta.streamer.views.CircleImageView
+        <pasta.music.views.CircleImageView
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="#BDBDBD"

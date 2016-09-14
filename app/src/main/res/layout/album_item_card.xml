@@ -22,7 +22,7 @@
             android:background="#1f000000"
             android:id="@+id/artist">
 
-            <pasta.streamer.views.CircleImageView
+            <pasta.music.views.CircleImageView
                 android:id="@+id/artist_image"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
@@ -117,7 +117,7 @@
 
             </LinearLayout>
 
-            <pasta.streamer.views.SquareImageView
+            <pasta.music.views.SquareImageView
                 android:id="@+id/image"
                 android:layout_width="136dp"
                 android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                 android:scaleType="centerCrop"
                 android:layout_gravity="start" />
 
-            <pasta.streamer.views.CustomImageView
+            <pasta.music.views.CustomImageView
                 android:layout_width="56dp"
                 android:layout_height="68dp"
                 android:layout_gravity="bottom|end"

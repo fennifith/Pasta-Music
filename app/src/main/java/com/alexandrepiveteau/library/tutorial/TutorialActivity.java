@@ -38,7 +38,7 @@ import com.alexandrepiveteau.library.tutorial.widgets.PageIndicator;
 import java.util.ArrayList;
 import java.util.List;
 
-import pasta.streamer.R;
+import pasta.music.R;
 
 
 public abstract class TutorialActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener, ViewPager.OnPageChangeListener {

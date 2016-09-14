@@ -14,7 +14,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <pasta.streamer.views.SquareImageView
+        <pasta.music.views.SquareImageView
             android:layout_width="128dp"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_mood_bad"

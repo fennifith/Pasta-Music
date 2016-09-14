@@ -12,7 +12,7 @@
     <string name="title_activity_settings" translatable="true">Settings</string>
     <string name="title_activity_playing" translatable="true">Now Playing</string>
     <string name="title_activity_about" translatable="true">About</string>
-    <string name="title_about" translatable="true">About Pasta for Spotify</string>
+    <string name="title_about" translatable="true">About Pasta Music</string>
 
     <!-- Generic -->
     <string name="ok" translatable="true">OK</string>
@@ -119,10 +119,10 @@
 
     <string-array name="people_descs" translatable="true">
         <item>A Java and web developer, started the project and wrote most of the spaghetti code ;)</item>
-        <item>A German student, developer, and blogger. Helped with performance issues and managed the Spotify api.</item>
+        <item>A German student, developer, and blogger. Helped with a few performance issues.</item>
         <item>Another German developer, helped primarily with organization and file layout.</item>
         <item>Gave helpful suggestions for occasional issues (and wasted a quarter of a year in our group chat).</item>
-        <item>The maker of CandyCons, designed Pasta\'s amazing icon and gave design feedback.</item>
+        <item>The maker of CandyCons, designed an amazing icon and gave design feedback.</item>
         <item>Founder of 221 Pixels, helped with UI design and color choice.</item>
     </string-array>
 

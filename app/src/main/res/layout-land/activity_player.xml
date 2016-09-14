@@ -1,6 +1,7 @@
 <layout>
     <data>
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+
+        <import type="pasta.music.utils.PreferenceUtils" />
     </data>
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,7 +22,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/frame">
 
-                <pasta.streamer.views.SecondSquareImageView
+                <pasta.music.views.SecondSquareImageView
                     android:id="@+id/trackImage"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -31,7 +32,7 @@
                     android:background="#fafafa"
                     android:transitionName="image" />
 
-                <pasta.streamer.views.SecondSquareImageView
+                <pasta.music.views.SecondSquareImageView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical|top"
@@ -170,7 +171,7 @@
                         android:orientation="horizontal"
                         android:layout_weight="1">
 
-                        <pasta.streamer.views.CustomImageView
+                        <pasta.music.views.CustomImageView
                             android:id="@+id/prevButton"
                             android:layout_width="0dp"
                             android:layout_height="42dp"
@@ -187,7 +188,7 @@
                             android:layout_gravity="center_vertical"
                             android:padding="8dp" />
 
-                        <pasta.streamer.views.CustomImageView
+                        <pasta.music.views.CustomImageView
                             android:id="@+id/playButton"
                             android:layout_width="0dp"
                             android:layout_height="42dp"
@@ -200,7 +201,7 @@
                             android:layout_gravity="center"
                             android:padding="8dp" />
 
-                        <pasta.streamer.views.CustomImageView
+                        <pasta.music.views.CustomImageView
                             android:id="@+id/nextButton"
                             android:layout_width="0dp"
                             android:layout_height="42dp"

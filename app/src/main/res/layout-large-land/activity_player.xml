@@ -1,7 +1,7 @@
 <layout>
     <data>
 
-        <import type="pasta.streamer.utils.PreferenceUtils" />
+        <import type="pasta.music.utils.PreferenceUtils" />
     </data>
 
     <FrameLayout
@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="?android:colorBackground">
 
-        <pasta.streamer.views.CustomImageView
+        <pasta.music.views.CustomImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/image_gradient"
@@ -49,7 +49,7 @@
                             android:layout_height="match_parent"
                             android:id="@+id/frame">
 
-                            <pasta.streamer.views.SecondSquareImageView
+                            <pasta.music.views.SecondSquareImageView
                                 android:id="@+id/trackImage"
                                 android:layout_width="wrap_content"
                                 android:layout_height="match_parent"
@@ -175,7 +175,7 @@
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal">
 
-                                <pasta.streamer.views.CustomImageView
+                                <pasta.music.views.CustomImageView
                                     android:id="@+id/prevButton"
                                     android:layout_width="0dp"
                                     android:layout_height="36dp"
@@ -191,7 +191,7 @@
                                     android:layout_marginEnd="8dp"
                                     android:layout_gravity="center_vertical" />
 
-                                <pasta.streamer.views.CustomImageView
+                                <pasta.music.views.CustomImageView
                                     android:id="@+id/playButton"
                                     android:layout_width="0dp"
                                     android:layout_height="36dp"
@@ -203,7 +203,7 @@
                                     android:layout_weight="1"
                                     android:layout_gravity="center" />
 
-                                <pasta.streamer.views.CustomImageView
+                                <pasta.music.views.CustomImageView
                                     android:id="@+id/nextButton"
                                     android:layout_width="0dp"
                                     android:layout_height="36dp"

@@ -64,7 +64,7 @@
 
             </LinearLayout>
 
-            <pasta.streamer.views.SquareImageView
+            <pasta.music.views.SquareImageView
                 android:id="@+id/image"
                 android:layout_width="136dp"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
                 android:scaleType="centerCrop"
                 android:layout_gravity="start" />
 
-            <pasta.streamer.views.CustomImageView
+            <pasta.music.views.CustomImageView
                 android:layout_width="56dp"
                 android:layout_height="68dp"
                 android:layout_gravity="bottom|end"
