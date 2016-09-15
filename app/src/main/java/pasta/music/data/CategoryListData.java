@@ -3,7 +3,7 @@ package pasta.music.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class CategoryListData implements Parcelable {
+public class CategoryListData extends ListData implements Parcelable {
     public static final Creator<CategoryListData> CREATOR = new Creator<CategoryListData>() {
         public CategoryListData createFromParcel(Parcel in) {
             return new CategoryListData(in);

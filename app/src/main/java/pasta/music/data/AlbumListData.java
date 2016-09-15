@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumListData implements Parcelable {
+public class AlbumListData extends ListData implements Parcelable {
     public static final Creator<AlbumListData> CREATOR = new Creator<AlbumListData>() {
         public AlbumListData createFromParcel(Parcel in) {
             return new AlbumListData(in);
