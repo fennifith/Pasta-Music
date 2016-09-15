@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistListData implements Parcelable {
+public class ArtistListData extends ListData implements Parcelable {
     public static final Parcelable.Creator<ArtistListData> CREATOR = new Parcelable.Creator<ArtistListData>() {
         public ArtistListData createFromParcel(Parcel in) {
             return new ArtistListData(in);

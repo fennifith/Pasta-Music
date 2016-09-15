@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class TextListData implements Parcelable {
+public class TextListData extends ListData implements Parcelable {
 
     public static final Creator<TextListData> CREATOR = new Creator<TextListData>() {
         public TextListData createFromParcel(Parcel in) {
