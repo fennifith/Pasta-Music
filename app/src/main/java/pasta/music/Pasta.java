@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -32,7 +31,45 @@ public class Pasta extends Application {
 
     private ErrorDialog errorDialog;
 
-    private ArrayList<TrackListData> tracks;
+    private List<TrackListData> tracks;
+    private List<AlbumListData> albums;
+    private List<PlaylistListData> playlists;
+    private List<ArtistListData> artists;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        tracks = new ArrayList<>();
+        albums = new ArrayList<>();
+        playlists = new ArrayList<>();
+        artists = new ArrayList<>();
+    }
+
+    public void setUp() {
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+
+            do {
+                long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisAlbum = musicCursor.getString(albumColumn);
+                Uri trackUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, thisId);
+
+                tracks.add(new TrackListData(thisTitle, thisAlbum, trackUri.toString()));
+            } while (musicCursor.moveToNext());
+        }
+
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
+    }
 
     public void setScreen(Context context) {
         //TODO: weird analytics things
@@ -247,35 +284,5 @@ public class Pasta extends Application {
     @Nullable
     public List<PlaylistListData> getFeaturedPlaylists() {
         return new ArrayList<>();
-    }
-
-    public void setUp()
-    {
-        tracks=new ArrayList<>();
-                ContentResolver musicResolver = getContentResolver();
-                Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
-                if (musicCursor != null && musicCursor.moveToFirst()) {
-                    int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-                    int albumColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-                    int idColumn=musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
-                    do {
-                        long thisId = musicCursor.getLong(idColumn);
-                        String thisTitle = musicCursor.getString(titleColumn);
-                        String thisAlbum = musicCursor.getString(albumColumn);
-                        Uri trackUri = ContentUris.withAppendedId(
-                                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                                thisId);
-                        tracks.add(new TrackListData(thisTitle,thisAlbum,trackUri.toString()));
-                    }
-                    while (musicCursor.moveToNext());
-                }
-                if (musicCursor != null) {
-                    musicCursor.close();
-                }
-
-
-                Log.d("fetch","Fetching finished");
-
     }
 }
