@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ArtistListData extends ListData implements Parcelable {
+public class ArtistListData  implements Parcelable {
     public static final Parcelable.Creator<ArtistListData> CREATOR = new Parcelable.Creator<ArtistListData>() {
         public ArtistListData createFromParcel(Parcel in) {
             return new ArtistListData(in);
@@ -27,6 +27,11 @@ public class ArtistListData extends ListData implements Parcelable {
 
     @Nullable
     public List<String> genres;
+    public ArtistListData(String artistName, String artistId)
+    {
+        this.artistName=artistName;
+        this.artistId=artistId;
+    }
 
     public ArtistListData(Parcel in) {
         ReadFromParcel(in);

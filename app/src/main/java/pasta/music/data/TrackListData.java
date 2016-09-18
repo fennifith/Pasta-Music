@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrackListData extends ListData implements Parcelable {
+public class TrackListData  implements Parcelable {
 
     public static final Parcelable.Creator<TrackListData> CREATOR = new Parcelable.Creator<TrackListData>() {
         public TrackListData createFromParcel(Parcel in) {

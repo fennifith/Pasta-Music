@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,19 +36,65 @@ public class Pasta extends Application {
     private List<AlbumListData> albums;
     private List<PlaylistListData> playlists;
     private List<ArtistListData> artists;
-
+    private ContentResolver musicResolver;
     @Override
     public void onCreate() {
         super.onCreate();
-
+        musicResolver = getContentResolver();
         tracks = new ArrayList<>();
         albums = new ArrayList<>();
         playlists = new ArrayList<>();
         artists = new ArrayList<>();
     }
+    public void setUpArtists()
+    {
+        Cursor artistCursor=musicResolver.query(
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                new String[]{
+                        MediaStore.Audio.Artists.ARTIST,
+                        MediaStore.Audio.Artists.ARTIST_KEY
+                },null,null,
+                MediaStore.Audio.Artists.ARTIST+" ASC"
+        );
 
-    public void setUp() {
-        ContentResolver musicResolver = getContentResolver();
+        if(artistCursor!=null && artistCursor.moveToFirst())
+        {
+            do{
+               String artistKey=artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST_KEY));
+                String artistName=artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST));
+                Log.d("Artist","Found new Artist "+artistName+" key= "+artistKey);
+                artists.add(new ArtistListData(artistName,String.valueOf(artistKey)));
+            }while (artistCursor.moveToNext());
+            artistCursor.close();
+        }
+    }
+    public void setUpAlbums()
+    {
+        Cursor albumCursor = musicResolver.query(
+                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[] {
+                        MediaStore.Audio.Albums.ARTIST,
+                        MediaStore.Audio.Albums._ID,
+                        MediaStore.Audio.Albums.ALBUM_ART,
+                        MediaStore.Audio.Albums.LAST_YEAR,
+                        MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                        MediaStore.Audio.Albums.ALBUM}, null, null,
+                MediaStore.Audio.Albums.ALBUM + " ASC");
+        if(albumCursor!=null && albumCursor.moveToFirst())
+        {
+            do {
+                String albumDate=albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR));
+                String albumArt=albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                long albumId = albumCursor.getLong(albumCursor.getColumnIndex(MediaStore.Audio.Albums._ID));
+                String albumName = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM));
+                Log.d("Albums","Found new album "+albumName+" ID= "+albumId+" albumArt "+albumArt+" Date= "+albumDate);
+                albums.add(new AlbumListData(String.valueOf(albumId),albumName,albumDate,albumArt));
+            }while (albumCursor.moveToNext());
+            albumCursor.close();
+        }
+    }
+    public void setUpSongs() {
+
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
