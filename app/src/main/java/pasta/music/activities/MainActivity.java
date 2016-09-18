@@ -57,6 +57,36 @@ public class MainActivity extends AppCompatActivity {
 
     private void openRequest() {
         if (StaticUtils.isPermissionsGranted(this)) {
+            new Action()
+            {
+                @NonNull
+                @Override
+                public String id() {
+                    return "fetch_artists";
+                }
+
+                @Nullable
+                @Override
+                protected Object run() throws InterruptedException {
+                    pasta.setUpArtists();
+                    return null;
+                }
+            }.execute();
+            new Action()
+            {
+                @NonNull
+                @Override
+                public String id() {
+                    return "fetch_albums";
+                }
+
+                @Nullable
+                @Override
+                protected Object run() throws InterruptedException {
+                    pasta.setUpAlbums();
+                    return null;
+                }
+            }.execute();
             new Action() {
                 @NonNull
                 @Override
@@ -67,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 @Nullable
                 @Override
                 protected Object run() throws InterruptedException {
-                    pasta.setUp();
+                    pasta.setUpSongs();
                     return null;
                 }
 

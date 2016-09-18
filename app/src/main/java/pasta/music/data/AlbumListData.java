@@ -6,8 +6,8 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumListData extends ListData implements Parcelable {
-    public static final Creator<AlbumListData> CREATOR = new Creator<AlbumListData>() {
+public class AlbumListData implements Parcelable {
+    public static final Parcelable.Creator<AlbumListData> CREATOR = new Parcelable.Creator<AlbumListData>() {
         public AlbumListData createFromParcel(Parcel in) {
             return new AlbumListData(in);
         }
@@ -17,6 +17,62 @@ public class AlbumListData extends ListData implements Parcelable {
         }
     };
 
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public int getTracks() {
+        return tracks;
+    }
+
+    public void setTracks(int tracks) {
+        this.tracks = tracks;
+    }
+
+    public List<ArtistListData> getArtists() {
+        return artists;
+    }
+
+    public void setArtists(List<ArtistListData> artists) {
+        this.artists = artists;
+    }
+
+    public String getAlbumImageLarge() {
+        return albumImageLarge;
+    }
+
+    public void setAlbumImageLarge(String albumImageLarge) {
+        this.albumImageLarge = albumImageLarge;
+    }
+
+    public String getAlbumImage() {
+        return albumImage;
+    }
+
+    public void setAlbumImage(String albumImage) {
+        this.albumImage = albumImage;
+    }
+
+    public String getAlbumDate() {
+        return albumDate;
+    }
+
+    public void setAlbumDate(String albumDate) {
+        this.albumDate = albumDate;
+    }
+
+    public String getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(String albumId) {
+        this.albumId = albumId;
+    }
+
     public String albumName;
     public String albumId;
     public String albumDate;
@@ -25,6 +81,13 @@ public class AlbumListData extends ListData implements Parcelable {
     public List<ArtistListData> artists;
     public int tracks;
 
+    public AlbumListData(String albumId,String albumName,String albumDate,String albumImage)
+    {
+        this.albumId=albumId;
+        this.albumName=albumName;
+        this.albumDate=albumDate;
+        this.albumImage=albumImage;
+    }
     public AlbumListData(Parcel in) {
         ReadFromParcel(in);
     }
