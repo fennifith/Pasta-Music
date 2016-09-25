@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import pasta.music.data.AlbumListData;
@@ -37,6 +39,7 @@ public class Pasta extends Application {
     private List<PlaylistListData> playlists;
     private List<ArtistListData> artists;
     private ContentResolver musicResolver;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -46,33 +49,32 @@ public class Pasta extends Application {
         playlists = new ArrayList<>();
         artists = new ArrayList<>();
     }
-    public void setUpArtists()
-    {
-        Cursor artistCursor=musicResolver.query(
+
+    public void setUpArtists() {
+        Cursor artistCursor = musicResolver.query(
                 MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
                 new String[]{
                         MediaStore.Audio.Artists.ARTIST,
                         MediaStore.Audio.Artists.ARTIST_KEY
-                },null,null,
-                MediaStore.Audio.Artists.ARTIST+" ASC"
+                }, null, null,
+                MediaStore.Audio.Artists.ARTIST + " ASC"
         );
 
-        if(artistCursor!=null && artistCursor.moveToFirst())
-        {
-            do{
-               String artistKey=artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST_KEY));
-                String artistName=artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST));
-                Log.d("Artist","Found new Artist "+artistName+" key= "+artistKey);
-                artists.add(new ArtistListData(artistName,String.valueOf(artistKey)));
-            }while (artistCursor.moveToNext());
+        if (artistCursor != null && artistCursor.moveToFirst()) {
+            do {
+                String artistKey = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST_KEY));
+                String artistName = artistCursor.getString(artistCursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST));
+                Log.d("Artist", "Found new Artist " + artistName + " key= " + artistKey);
+                artists.add(new ArtistListData(artistName, String.valueOf(artistKey)));
+            } while (artistCursor.moveToNext());
             artistCursor.close();
         }
     }
-    public void setUpAlbums()
-    {
+
+    public void setUpAlbums() {
         Cursor albumCursor = musicResolver.query(
                 MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                new String[] {
+                new String[]{
                         MediaStore.Audio.Albums.ARTIST,
                         MediaStore.Audio.Albums._ID,
                         MediaStore.Audio.Albums.ALBUM_ART,
@@ -80,21 +82,21 @@ public class Pasta extends Application {
                         MediaStore.Audio.Albums.NUMBER_OF_SONGS,
                         MediaStore.Audio.Albums.ALBUM}, null, null,
                 MediaStore.Audio.Albums.ALBUM + " ASC");
-        if(albumCursor!=null && albumCursor.moveToFirst())
-        {
+
+        if (albumCursor != null && albumCursor.moveToFirst()) {
             do {
-                String albumDate=albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR));
-                String albumArt=albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+                String albumDate = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.LAST_YEAR));
+                String albumArt = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
                 long albumId = albumCursor.getLong(albumCursor.getColumnIndex(MediaStore.Audio.Albums._ID));
                 String albumName = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM));
-                Log.d("Albums","Found new album "+albumName+" ID= "+albumId+" albumArt "+albumArt+" Date= "+albumDate);
-                albums.add(new AlbumListData(String.valueOf(albumId),albumName,albumDate,albumArt));
-            }while (albumCursor.moveToNext());
+                Log.d("Albums", "Found new album " + albumName + " ID= " + albumId + " albumArt " + albumArt + " Date= " + albumDate);
+                albums.add(new AlbumListData(String.valueOf(albumId), albumName, albumDate, albumArt));
+            } while (albumCursor.moveToNext());
             albumCursor.close();
         }
     }
-    public void setUpSongs() {
 
+    public void setUpSongs() {
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
 
@@ -305,27 +307,76 @@ public class Pasta extends Application {
 
     @Nullable
     public List<PlaylistListData> searchPlaylists(String query, int limit) throws InterruptedException {
-        return new ArrayList<>();
+        query = query.toLowerCase();
+
+        List<PlaylistListData> playlists = new ArrayList<>();
+        for (int i = 0; i < this.playlists.size() && i < limit; i++) {
+            PlaylistListData data = this.playlists.get(i);
+            if (query.contains(data.playlistName.toLowerCase()) || data.playlistName.toLowerCase().contains(query))
+                playlists.add(data);
+        }
+
+        return playlists;
     }
 
     @Nullable
     public List<ArtistListData> searchArtists(String query, int limit) throws InterruptedException {
-        return new ArrayList<>();
+        query = query.toLowerCase();
+
+        List<ArtistListData> artists = new ArrayList<>();
+        for (int i = 0; i < this.artists.size() && i < limit; i++) {
+            ArtistListData data = this.artists.get(i);
+            if (query.contains(data.artistName.toLowerCase()) || data.artistName.toLowerCase().contains(query))
+                artists.add(data);
+        }
+
+        return artists;
     }
 
     @Nullable
     public List<TrackListData> searchTracks(String query, int limit) throws InterruptedException {
-        return new ArrayList<>();
+        query = query.toLowerCase();
+
+        List<TrackListData> tracks = new ArrayList<>();
+        for (int i = 0; i < this.tracks.size() && i < limit; i++) {
+            TrackListData data = this.tracks.get(i);
+            if (query.contains(data.trackName.toLowerCase()) || data.trackName.toLowerCase().contains(query))
+                tracks.add(data);
+        }
+
+        return tracks;
     }
 
     @Nullable
     public List<AlbumListData> searchAlbums(String query, int limit) throws InterruptedException {
-        return new ArrayList<>();
+        query = query.toLowerCase();
+
+        List<AlbumListData> albums = new ArrayList<>();
+        for (int i = 0; i < this.albums.size() && i < limit; i++) {
+            AlbumListData data = this.albums.get(i);
+            if (query.contains(data.albumName.toLowerCase()) || data.albumName.toLowerCase().contains(query))
+                albums.add(data);
+        }
+
+        return albums;
     }
 
     @Nullable
     public List<AlbumListData> getNewAlbums() {
-        return new ArrayList<>();
+        List<AlbumListData> albums = new ArrayList<>();
+
+        Collections.sort(this.albums, new Comparator<AlbumListData>() {
+            @Override
+            public int compare(AlbumListData o1, AlbumListData o2) {
+                return o1.albumDate.compareTo(o2.albumDate);
+            }
+        });
+
+        for (int i = 0; i < this.albums.size() && i < 10; i++) {
+            albums.add(this.albums.get(i));
+        }
+
+        return albums;
     }
 
     @Nullable

@@ -11,6 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.afollestad.async.Action;
+import com.afollestad.async.Async;
+import com.afollestad.async.Done;
+import com.afollestad.async.Result;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -38,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         pasta.setScreen(this);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getBoolean("first_run",true)) {
+        if (prefs.getBoolean("first_run", true)) {
             prefs.edit().putBoolean("first_run", false).apply();
             startActivity(new Intent(MainActivity.this, IntroActivity.class));
             start.setVisibility(View.VISIBLE);
@@ -57,52 +60,52 @@ public class MainActivity extends AppCompatActivity {
 
     private void openRequest() {
         if (StaticUtils.isPermissionsGranted(this)) {
-            new Action()
-            {
-                @NonNull
-                @Override
-                public String id() {
-                    return "fetch_artists";
-                }
+            Async.parallel(
+                    new Action() {
+                        @NonNull
+                        @Override
+                        public String id() {
+                            return "fetch_artists";
+                        }
 
-                @Nullable
-                @Override
-                protected Object run() throws InterruptedException {
-                    pasta.setUpArtists();
-                    return null;
-                }
-            }.execute();
-            new Action()
-            {
-                @NonNull
-                @Override
-                public String id() {
-                    return "fetch_albums";
-                }
+                        @Nullable
+                        @Override
+                        protected Object run() throws InterruptedException {
+                            pasta.setUpArtists();
+                            return null;
+                        }
+                    },
+                    new Action() {
+                        @NonNull
+                        @Override
+                        public String id() {
+                            return "fetch_albums";
+                        }
 
-                @Nullable
-                @Override
-                protected Object run() throws InterruptedException {
-                    pasta.setUpAlbums();
-                    return null;
-                }
-            }.execute();
-            new Action() {
-                @NonNull
-                @Override
-                public String id() {
-                    return "fetch_songs";
-                }
+                        @Nullable
+                        @Override
+                        protected Object run() throws InterruptedException {
+                            pasta.setUpAlbums();
+                            return null;
+                        }
+                    },
+                    new Action() {
+                        @NonNull
+                        @Override
+                        public String id() {
+                            return "fetch_songs";
+                        }
 
-                @Nullable
+                        @Nullable
+                        @Override
+                        protected Object run() throws InterruptedException {
+                            pasta.setUpSongs();
+                            return null;
+                        }
+                    }
+            ).done(new Done() {
                 @Override
-                protected Object run() throws InterruptedException {
-                    pasta.setUpSongs();
-                    return null;
-                }
-
-                @Override
-                protected void done(@Nullable Object result) {
+                public void result(@NonNull Result result) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -115,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }, 1500);
                 }
-            }.execute();
+            });
+
         } else StaticUtils.requestPermissions(this);
     }
 }

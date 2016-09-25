@@ -426,7 +426,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
 
                 View artist = holder.v.findViewById(R.id.artist);
                 if (artist != null) {
-                    if (albumData.artists.size() > 0) {
+                    if (albumData.artists != null && albumData.artists.size() > 0) {
                         ((TextView) holder.v.findViewById(R.id.artist_name)).setText(albumData.artists.get(0).artistName);
                         ((TextView) holder.v.findViewById(R.id.artist_extra)).setText(albumData.albumDate);
 
