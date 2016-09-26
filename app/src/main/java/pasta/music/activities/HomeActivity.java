@@ -510,35 +510,9 @@ public class HomeActivity extends AppCompatActivity implements ColorChooserDialo
                 ((SearchFragment) f).swapData(searchDatas);
 
                 if (albumsResult != null && !albumsResult.isCancelled() && albumsResult.getResult() != null) {
-                    ArrayList<String> results = (ArrayList<String>) albumsResult.getResult();
-                    Action[] varargs = new Action[results.size()];
-
-                    for (int i = 0; i < results.size(); i++) {
-                        final String id = results.get(i);
-                        varargs[i] = new Action<AlbumListData>() {
-                            @NonNull
-                            @Override
-                            public String id() {
-                                return "getAlbum";
-                            }
-
-                            @Nullable
-                            @Override
-                            protected AlbumListData run() throws InterruptedException {
-                                return pasta.getAlbum(id);
-                            }
-
-                            @Override
-                            protected void done(@Nullable AlbumListData result) {
-                                if (result == null) return;
-
-                                searchDatas.add(result);
-                                ((SearchFragment) f).addData(result);
-                            }
-                        };
-                    }
-
-                    searchPool = Async.parallel(varargs);
+                    ArrayList<AlbumListData> results = (ArrayList<AlbumListData>) albumsResult.getResult();
+                    searchDatas.add(results);
+                    ((SearchFragment) f).addData(results);
                 }
             }
         });

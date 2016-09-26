@@ -368,7 +368,8 @@ public class Pasta extends Application {
         Collections.sort(this.albums, new Comparator<AlbumListData>() {
             @Override
             public int compare(AlbumListData o1, AlbumListData o2) {
-                return o1.albumDate.compareTo(o2.albumDate);
+                if (o1.albumDate == null || o2.albumDate == null) return 0;
+                else return o1.albumDate.compareTo(o2.albumDate);
             }
         });
 

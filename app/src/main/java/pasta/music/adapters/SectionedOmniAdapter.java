@@ -211,7 +211,7 @@ public class SectionedOmniAdapter extends RecyclerView.Adapter<SectionedOmniAdap
 
                 ((TextView) holder.v.findViewById(R.id.name)).setText(trackData.trackName);
                 TextView extra = (TextView) holder.v.findViewById(R.id.extra);
-                if (trackData.artists.size() > 0)
+                if (trackData.artists != null && trackData.artists.size() > 0)
                     extra.setText(trackData.artists.get(0).artistName);
 
                 holder.v.setOnClickListener(new View.OnClickListener() {
