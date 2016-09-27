@@ -89,8 +89,9 @@ public class Pasta extends Application {
                 String albumArt = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
                 long albumId = albumCursor.getLong(albumCursor.getColumnIndex(MediaStore.Audio.Albums._ID));
                 String albumName = albumCursor.getString(albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM));
+               int numSongs = albumCursor.getInt(albumCursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS));
                 Log.d("Albums", "Found new album " + albumName + " ID= " + albumId + " albumArt " + albumArt + " Date= " + albumDate);
-                albums.add(new AlbumListData(String.valueOf(albumId), albumName, albumDate, albumArt));
+                albums.add(new AlbumListData(String.valueOf(albumId), albumName, albumDate, albumArt,numSongs));
             } while (albumCursor.moveToNext());
             albumCursor.close();
         }

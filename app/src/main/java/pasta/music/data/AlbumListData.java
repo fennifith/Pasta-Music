@@ -81,12 +81,13 @@ public class AlbumListData implements Parcelable {
     public List<ArtistListData> artists;
     public int tracks;
 
-    public AlbumListData(String albumId,String albumName,String albumDate,String albumImage)
+    public AlbumListData(String albumId,String albumName,String albumDate,String albumImage,int tracks)
     {
         this.albumId=albumId;
         this.albumName=albumName;
         this.albumDate=albumDate;
         this.albumImage=albumImage;
+        this.tracks=tracks;
     }
     public AlbumListData(Parcel in) {
         ReadFromParcel(in);
