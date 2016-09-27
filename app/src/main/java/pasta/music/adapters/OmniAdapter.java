@@ -507,7 +507,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
                 }
 
                 ((TextView) holder.v.findViewById(R.id.name)).setText(albumData.albumName);
-                ((TextView) holder.v.findViewById(R.id.extra)).setText(String.valueOf(albumData.tracks) + " tracks");
+                ((TextView) holder.v.findViewById(R.id.extra)).setText(String.valueOf(albumData.tracks) + (albumData.tracks == 1 ? " track" : " tracks"));
 
                 holder.v.findViewById(R.id.album).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -629,7 +629,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
                 image = playlistData.playlistImage;
 
                 ((TextView) holder.v.findViewById(R.id.name)).setText(playlistData.playlistName);
-                ((TextView) holder.v.findViewById(R.id.extra)).setText(playlistData.tracks + " tracks");
+                ((TextView) holder.v.findViewById(R.id.extra)).setText(playlistData.tracks + (playlistData.tracks == 1 ? " track" : " tracks"));
 
                 holder.v.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -741,7 +741,7 @@ public class OmniAdapter extends RecyclerView.Adapter<OmniAdapter.ViewHolder> {
                 image = artistData.artistImage;
 
                 ((TextView) holder.v.findViewById(R.id.name)).setText(artistData.artistName);
-                ((TextView) holder.v.findViewById(R.id.extra)).setText(String.valueOf(artistData.followers) + " followers");
+                ((TextView) holder.v.findViewById(R.id.extra)).setText(String.valueOf(artistData.followers) + (artistData.followers == 1 ? " follower" : " followers"));
 
                 holder.v.setOnClickListener(new View.OnClickListener() {
                     @Override
